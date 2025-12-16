@@ -1,25 +1,28 @@
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
+        Options -MultiViews
     </IfModule>
 
-    RewriteEngine On
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteEngine on
+    # RewriteCond %{REQUEST_URI} !^public
+    # RewriteRule ^(.*)$ public/$1 [L]
 
-    # Handle X-XSRF-Token Header
-    RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteCond %{SERVER_PORT} 80
+    RewriteRule ^(.*)$ https://remi/$1 [R,L]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    # RewriteCond %{QUERY_STRING} ^$
+    # RewriteCond %{REQUEST_URI} ^/?$
+    # RewriteCond %{DOCUMENT_ROOT}/page-cache/pc__index__pc.html -f
+    # RewriteRule .? page-cache/pc__index__pc.html [L]
+    
+    # RewriteCond %{QUERY_STRING} ^$
+    # RewriteCond %{DOCUMENT_ROOT}/page-cache%{REQUEST_URI}.html -f
+    # RewriteRule . page-cache%{REQUEST_URI}.html [L]
+
+
+    
+  
+ 
 </IfModule>

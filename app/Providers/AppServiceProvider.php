@@ -3,21 +3,28 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Bootstrap any application services.
+     *
+     * @return void
      */
-    public function register(): void
+    public function boot()
     {
-        //
+        Paginator::useBootstrap();
+        // Paginator::useTailwind();
     }
 
     /**
-     * Bootstrap any application services.
+     * Register any application services.
+     *
+     * @return void
      */
-    public function boot(): void
+    public function register()
     {
         //
     }

@@ -21,6 +21,7 @@ use App\Models\tracker_activity as tracker_activity;
 use App\Http\Controllers\checkmessageController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\SqlController;
+use App\Http\Controllers\diaryController;
 use Auth;
 use Hash;
 use Session;
@@ -417,11 +418,11 @@ class ApiController extends Controller
         $hospital = $request->input('hospital'); 
         $password = $request->input('password'); 
         $type_user = '1'; 
-        $url ="https://service.foodieat.in.th/remi/personal_doctor/".$doctor_id;
-        
+        $url ="https://health-track.in.th/personal_doctor/".$doctor_id;
+        $qrcode =  (new diaryController)->generateQRCode($url);  
         // $url = $this->api_gen_qrcode($url);
-        $qrcode ='https://chart.googleapis.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl=line://app/1656991660-K8bDpjZ9?key='.$doctor_id;
-        $doctor = doctor::create(request(['doctor_id','name', 'lastname','hospital','type_user' ,'password']));
+       // $qrcode ='https://chart.googleapis.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl=line://app/1656991660-K8bDpjZ9?key='.$doctor_id;
+        $doctor = doctor::create(request(['doctor_id','name', 'lastname','qr_code','hospital','type_user' ,'password']));
         $qrcode_update = doctor::where('doctor_id', $doctor_id)
                                ->update(['qr_code' => $qrcode ]);
         $message = 'ลงทะเบียนแล้วค่ะ';   

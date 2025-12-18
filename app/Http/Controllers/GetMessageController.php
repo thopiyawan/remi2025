@@ -3677,7 +3677,7 @@ if(!is_null($events)){
                   $case = 18;
                   $sequentsteps = (new SqlController)->sequentsteps_seqcode($user);
                   $img = $sequentsteps->answer;
-                  $userMessage = 'https://service.foodieat.in.th/remi/uploads/'.$img ;
+                  $userMessage = 'https://health-track.in.th/uploads/'.$img ;
 //เพิ่ม
            }elseif (strpos($userMessage, 'ยืนยันคุณหมอ') !== false ) {
                  
@@ -3778,11 +3778,11 @@ if(!is_null($events)){
                     break;
                   case ($userMessage == 'คำนวณค่าดัชนีมวลกายอย่างไร?'): 
                         $case = 18;
-                        $userMessage  = 'https://service.foodieat.in.th/remi/knowledge/bmi-cal.jpg';
+                        $userMessage  = 'https://health-track.in.th/knowledge/bmi-cal.jpg';
                     break;
                   case ($userMessage == 'คุณแม่รูปร่างต่างกันน้ำหนักควรเพิ่มเท่าไร?'): 
                         $case = 18;
-                        $userMessage  = 'https://service.foodieat.in.th/remi/knowledge/incre-weight.jpg';
+                        $userMessage  = 'https://health-track.in.th/knowledge/incre-weight.jpg';
                     break;
                   case ($userMessage == 'อาหารที่คุณแม่ควรทาน'): 
                         $case = 1;
@@ -3870,7 +3870,7 @@ if(!is_null($events)){
                     }
                   
                   $case = 18;
-                  $userMessage  = 'https://service.foodieat.in.th/remi/food/'.$result.'.jpg';
+                  $userMessage  = 'https://health-track.in.th/food/'.$result.'.jpg';
 
              // }elseif ((new checkmessageController)->match($array, $userMessage )){
              //      // $userMessage = 'hhihih';

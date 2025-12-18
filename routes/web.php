@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\GetMessageController;
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\diaryController;
+use App\Http\Controllers\noticeController;
+use App\Http\Controllers\testController;
+use App\Http\Controllers\SqlController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

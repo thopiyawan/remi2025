@@ -98,7 +98,7 @@ class GetMessageController extends Controller {
     $content = file_get_contents('php://input');
         
     // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    $hash = hash_hmac('sha256', $content, LINE_MESSAGE_CHANNEL_SECRET, true);
+    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     $signature = base64_encode($hash);
                
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object

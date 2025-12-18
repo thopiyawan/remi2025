@@ -424,7 +424,8 @@ class ApiController extends Controller
        // $qrcode ='https://chart.googleapis.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl=line://app/1656991660-K8bDpjZ9?key='.$doctor_id;
         $doctor = doctor::create(request(['doctor_id','name', 'lastname','qr_code','hospital','type_user' ,'password']));
         $qrcode_update = doctor::where('doctor_id', $doctor_id)
-                               ->update(['qr_code' => $qrcode ]);
+                               ->update(['qr_code' => $qrcode, 
+                                        'type_user' => $type_user ]);
         $message = 'ลงทะเบียนแล้วค่ะ';   
          return Redirect::to('/')->with('success', true)->with('message','ลงทะเบียนแล้วค่ะ');  
 

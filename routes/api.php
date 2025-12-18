@@ -149,12 +149,15 @@ Route::get('test/{user_id}', [ApiController::class, 'test_graph']);
 
 Route::get('graph/{id}', [noticeController::class, 'graph']);
 
-Route::get('bot', function (Request $request) {
-    logger('message request : ', $request->all());
-});
+// Route::get('bot', function (Request $request) {
+//     logger('message request : ', $request->all());
+// });
 
-Route::post('bot', [GetMessageController::class, 'getmessage'])
-    ->name('line.bot.message');
+// Route::post('bot', [GetMessageController::class, 'getmessage'])
+//     ->name('line.bot.message');
+
+Route::post('/bot', [GetMessageController::class, 'getmessage']);
+Route::get('/bot', [GetMessageController::class, 'getmessage']);
 
 Route::get('peat_api', function (Request $request) {
     logger('message request : ', $request->all());

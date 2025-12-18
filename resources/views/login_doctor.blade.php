@@ -1,6 +1,6 @@
 <h2>Log In</h2>
     
-    <form method="POST" action="/remi/doctor_login">
+    <form method="POST" action="/doctor_login">
         {{ csrf_field() }}
         <div class="form-group">
             <label for="doctor_id">doctor_id:</label>

@@ -949,7 +949,7 @@ var chart3 = AmCharts.makeChart("chart2div", {
 								 @endforeach
                   </div>
               <hr/>
-							<form method="POST" action="/remi/api/weight_warning" class="p-2">
+							<form method="POST" action="/api/weight_warning" class="p-2">
 							     <input type="hidden" name="doctor_id" value="{{ $doctor_id }}" />
 							     <input type="hidden" name="user_id_line" value="{{ $user_id }}" />
 							     <div class="form-group">

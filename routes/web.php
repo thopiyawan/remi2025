@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\GetMessageController;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\diaryController;

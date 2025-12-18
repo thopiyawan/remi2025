@@ -68,8 +68,8 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 // define('LINE_MESSAGE_ACCESS_TOKEN','omL/jl2l8TFJaYFsOI2FaZipCYhBl6fnCf3da/PEvFG1e5ADvMJaILasgLY7jhcwrR2qOr2ClpTLmveDOrTBuHNPAIz2fzbNMGr7Wwrvkz08+ZQKyQ3lUfI5RK/NVozfMhLLAgcUPY7m4UtwVwqQKwdB04t89/1O/w1cDnyilFU=');
 // define('LINE_MESSAGE_CHANNEL_SECRET','949b099c23a7c9ca8aebe11ad9b43a52');
 // define('LINE_MESSAGE_ACCESS_TOKEN','qFLN6cTuyvSWdbB1FHgUBEsD9hM66QaW3+cKz/LsNkwzMrBNZrBkH9b1zuCGp9ks0IpGRLuT6W1wLOJSWQFAlnHT/KbDBpdpyDU4VTUdY6qs5o1RTuCDsL3jTxLZnW1qbgmLytIpgi1X1vqKKsYywAdB04t89/1O/w1cDnyilFU=');
-define('LINE_MESSAGE_CHANNEL_SECRET','a06f8f521aabe202f1ce7427b4e52d1b');
-define('LINE_MESSAGE_ACCESS_TOKEN','UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
+//define('LINE_MESSAGE_CHANNEL_SECRET','a06f8f521aabe202f1ce7427b4e52d1b');
+//define('LINE_MESSAGE_ACCESS_TOKEN','UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
 
 class diaryController extends Controller
 {
@@ -179,9 +179,11 @@ class diaryController extends Controller
                      $sequentsteps = (new SqlController)->personal_doctor_mom($user_id_line,$doctor_id);
                   }
         
-        $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-        $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-        $Message1 =  'เรียบร้อยแล้วค่ะ';
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
+                $Message1 =  'เรียบร้อยแล้วค่ะ';
         $textMessageBuilder = new TextMessageBuilder($Message1);
           
 
@@ -204,8 +206,10 @@ class diaryController extends Controller
             $message_type = '03';
             $log_message = (new SqlController)->log_message_doctor_to_mom($doctor_id,$user,$Message,$message_type);
             
-            $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-            $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+            $httpClient = new CurlHTTPClient(config('line.access_token'));
+            $bot = new LINEBot($httpClient, [
+                'channelSecret' => config('line.channel_secret')
+            ]);
     
             $textMessageBuilder = new TextMessageBuilder('👩‍⚕ : '.$Message);
             $response = $bot->pushMessage( $user ,$textMessageBuilder);
@@ -390,9 +394,11 @@ class diaryController extends Controller
         $users_register = users_register::where('user_id', $user_id)
                                        ->update(['status'=>'0']);
 
-        $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-        $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-    
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
+            
         $textMessageBuilder = new TextMessageBuilder('👩‍⚕ : ในอีก 3 เดือน คุณแม่ต้องเข้ารับการตรวจอีกครั้ง โดยจะมีการแจ้งเตือนอีกครั้งค่ะ');
         $response = $bot->pushMessage( $user_id ,$textMessageBuilder);
         $response->getHTTPStatus() . ' ' . $response->getRawBody();          
@@ -406,8 +412,10 @@ class diaryController extends Controller
         $name = $users_register->user_name;
         $tel = $users_register->phone_number;
         
-        $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-        $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
     
         // $textMessageBuilder = new TextMessageBuilder('ข้อความจากคุณ: '.$name.' แจ้งลูกดิ้นผิดปกติ เบอร์โทรผู้ป่วย: '. $tel);
         $textMessageBuilder = new TextMessageBuilder('แจ้งลูกดิ้นผิดปกติ คุณแม่ควรพบแพทย์อย่างเร่งด่วนค่ะ');

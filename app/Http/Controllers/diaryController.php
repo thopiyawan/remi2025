@@ -20,6 +20,7 @@ use App\Models\tracker_activity as tracker_activity;
 
 use Illuminate\Database\Query\Builder;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use View;
 use DB;
 use Carbon\Carbon;

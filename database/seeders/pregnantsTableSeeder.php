@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Seeders;
 
 class pregnantsTableSeeder extends Seeder
 {

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders; // บรรทัดนี้ต้องมีเพื่อบอกที่อยู่ของไฟล์
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class pregnantsTableSeeder extends Seeder
 {

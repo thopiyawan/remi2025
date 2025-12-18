@@ -90,15 +90,15 @@ class GetMessageController extends Controller {
 //get message from line chatbot
   public function getmessage() {         
   
-    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $httpClient = new CurlHTTPClient(env('LINE_MESSAGE_CHANNEL_TOKEN'));
     $bot = new LINEBot($httpClient, [
-        'channelSecret' => config('line.channel_secret')
+        'channelSecret' => env('LINE_MESSAGE_CHANNEL_SECRET')
     ]);
     // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
     $content = file_get_contents('php://input');
         
     // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
+    $hash = hash_hmac('sha256', $content, env('LINE_MESSAGE_CHANNEL_SECRET'), true);
     $signature = base64_encode($hash);
                
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object

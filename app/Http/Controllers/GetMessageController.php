@@ -70,7 +70,8 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 
 use Session;
-
+define('LINE_MESSAGE_CHANNEL_SECRET', env('LINE_CHANNEL_SECRET'));
+define('LINE_MESSAGE_ACCESS_TOKEN', env('LINE_CHANNEL_ACCESS_TOKEN'));
 // define('LINE_MESSAGE_CHANNEL_ID','กรอก ค่า Channel ID');
 // define('LINE_MESSAGE_CHANNEL_SECRET','f571a88a60d19bb28d06383cdd7af631');
 // define('LINE_MESSAGE_ACCESS_TOKEN','omL/jl2l8TFJaYFsOI2FaZipCYhBl6fnCf3da/PEvFG1e5ADvMJaILasgLY7jhcwrR2qOr2ClpTLmveDOrTBuHNPAIz2fzbNMGr7Wwrvkz08+ZQKyQ3lUfI5RK/NVozfMhLLAgcUPY7m4UtwVwqQKwdB04t89/1O/w1cDnyilFU=');
@@ -88,17 +89,15 @@ class GetMessageController extends Controller {
      * @var GetMessageService
      */
 //get message from line chatbot
-  public function getmessage() {         
+  public function getmessage(Request $request) {         
   
-    $httpClient = new CurlHTTPClient(env('LINE_MESSAGE_CHANNEL_TOKEN'));
-    $bot = new LINEBot($httpClient, [
-        'channelSecret' => env('LINE_MESSAGE_CHANNEL_SECRET')
-    ]);
-    // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
+    $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
+    $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+    
+       // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
     $content = file_get_contents('php://input');
-        
-    // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    $hash = hash_hmac('sha256', $content, env('LINE_MESSAGE_CHANNEL_SECRET'), true);
+         // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
+    $hash = hash_hmac('sha256', $content, LINE_MESSAGE_CHANNEL_SECRET, true);
     $signature = base64_encode($hash);
                
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object

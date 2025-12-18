@@ -26,7 +26,7 @@ body, html {
   /* The image used */
 
   
-  background-image: url(https://service.foodieat.in.th/remi/image/PRINT_REMI.jpg);
+  background-image: url(https://health-track.in.th/image/PRINT_REMI.jpg);
   /* background-image:linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5)),url('catfront.png'); */
   min-height: 2879px;
 
@@ -176,7 +176,7 @@ padding : 50px 0;
 	<div class="row">
 		<div class="col-md-4 login-sec">
         <div id="remi-logo" style="overflow: hidden; display: flex; justify-content:space-around;">
-            <img src ="https://service.foodieat.in.th/remi/css/remi.png">
+            <img src ="https://health-track.in.th/css/remi.png">
         </div>
 		    <h2 class="text-center">ลงชื่อเข้าใช้</h2>
             <form method="POST" action="{{route('login')}}">
@@ -214,22 +214,22 @@ padding : 50px 0;
                 <div id="banner" style="overflow: hidden; display: flex; justify-content:space-around;">
 
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_1.jpg">
+                    <img src ="https://service.foodieat.in.th/sponsor_logo/logo_1.jpg">
                 </div>
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_2.png">
+                    <img src ="https://health-track.in.th/sponsor_logo/logo_2.png">
                 </div>
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_3.png">
+                    <img src ="https://health-track.in.th/sponsor_logo/logo_3.png">
                 </div>
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_4.png">
+                    <img src ="https://health-track.in.th/sponsor_logo/logo_4.png">
                 </div>
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_5.png">
+                    <img src ="https://health-track.in.th/sponsor_logo/logo_5.png">
                 </div>
                 <div class="banner">
-                    <img src ="https://service.foodieat.in.th/remi/sponsor_logo/logo_6.png">
+                    <img src ="https://health-track.in.th/sponsor_logo/logo_6.png">
                 </div>
                 </div>
         </form>
@@ -256,7 +256,7 @@ padding : 50px 0;
         <!-- <div id="remi-logo" style="overflow: hidden; display: flex; justify-content:space-around;"> -->
         <div class="col-md-8 banner-sec">
         <div id="info-remi" class="carousel slide" data-ride="carousel">
-            <img src ="https://service.foodieat.in.th/remi/image/PRINT_REMI.jpg">
+            <img src ="https://health-track.in.th/image/PRINT_REMI.jpg">
         </div>
         </div>
 		    

@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeders;
+namespace Database\Seeders; // บรรทัดนี้ต้องมีเพื่อบอกที่อยู่ของไฟล์
+use Illuminate\Database\Seeder;
 
 class pregnantsTableSeeder extends Seeder
 {

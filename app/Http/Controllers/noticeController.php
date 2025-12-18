@@ -160,8 +160,10 @@ class noticeController extends Controller {
     //         return $bmi;
     // }
   public function notice_monday() {
-    $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-    $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
 
     $status = 2;
     $user_select = $this->user_select($status);
@@ -281,9 +283,10 @@ class noticeController extends Controller {
   }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   public function notice_day() {
-    $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-    $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
     $status = 3;
     $user_select = $this->user_select($status);
 
@@ -303,8 +306,10 @@ class noticeController extends Controller {
 
   }
   public function notice_breakfast() {
-    $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-    $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
 
     $status = 3;
     $user_select = $this->user_select($status);
@@ -345,8 +350,10 @@ class noticeController extends Controller {
       
   }
 public function notice_lunch()  {
-  $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-  $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+  $httpClient = new CurlHTTPClient(config('line.access_token'));
+  $bot = new LINEBot($httpClient, [
+      'channelSecret' => config('line.channel_secret')
+  ]);
   $status = 3;
   $user_select = $this->user_select($status);
   $arrlength = count($user_select);
@@ -372,8 +379,10 @@ public function notice_lunch()  {
       
   }
   public function notice_dinner() {
-    $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-    $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
 
     $status = 3;
     $user_select = $this->user_select($status);

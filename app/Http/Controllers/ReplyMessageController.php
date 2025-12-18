@@ -108,9 +108,10 @@ class ReplyMessageController extends Controller
      */
     public function replymessage2($replyToken,$userMessage1,$userMessage2)
     {
-          $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-          $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
 
                       $textMessage1 = new TextMessageBuilder($userMessage1);
                       $textMessage2 = new TextMessageBuilder($userMessage2);
@@ -849,9 +850,10 @@ class ReplyMessageController extends Controller
 
           //  $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
           //  $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-          $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-          $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
            $ws = (new SqlController)->weight_status_line($user);  
            $ws = $ws->weight_status;
                     if ($weight_criteria =='น้ำหนักน้อย') {
@@ -925,9 +927,10 @@ class ReplyMessageController extends Controller
     {
             // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
             // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-            $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-            $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+            $httpClient = new CurlHTTPClient(config('line.access_token'));
+            $bot = new LINEBot($httpClient, [
+                'channelSecret' => config('line.channel_secret')
+            ]);
             switch($case) {
      
                  case 1 : 
@@ -2275,9 +2278,10 @@ class ReplyMessageController extends Controller
     {
             // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
             // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-            $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-            $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+            $httpClient = new CurlHTTPClient(config('line.access_token'));
+            $bot = new LINEBot($httpClient, [
+                'channelSecret' => config('line.channel_secret')
+            ]);
                           // $textReplyMessage = $userMessage;
                           // $textMessage1 = new TextMessageBuilder($textReplyMessage);
                           // $textReplyMessage =   "คำถาม";
@@ -2324,9 +2328,10 @@ class ReplyMessageController extends Controller
     {
             // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
             // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-            $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-            $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+            $httpClient = new CurlHTTPClient(config('line.access_token'));
+            $bot = new LINEBot($httpClient, [
+                'channelSecret' => config('line.channel_secret')
+            ]);
             $user_update = (new SqlController)->reward_gift(); 
 
               foreach($user_update as $value){  
@@ -2365,9 +2370,10 @@ public function replymessage5($replyToken,$user)
           // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
           // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
 
-          $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-          $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
                 $reward_gift = (new SqlController)->reward_gift();
 
                 if( $reward_gift ==NULL){
@@ -2414,9 +2420,10 @@ public function replymessage5($replyToken,$user)
     {
           // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
           // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-          $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-          $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
               //   $count = (new SqlController)->presenting_gift_count($user);
 
                  $rewards = (new SqlController)->presenting_gift_group($user);
@@ -2459,9 +2466,10 @@ public function replymessage_food($replyToken,$user)
     {
           // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
           // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-          $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-          $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
           
                     $rewards   = (new SqlController)->foodmenu_img();
                     $columnTemplateBuilders = array();
@@ -2494,9 +2502,10 @@ public function replymessage_food1($replyToken,$user)
     {
           // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
           // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-          $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-          $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+          $httpClient = new CurlHTTPClient(config('line.access_token'));
+          $bot = new LINEBot($httpClient, [
+              'channelSecret' => config('line.channel_secret')
+          ]);
 
 
           $rewards   = (new SqlController)->foodmenu_img();
@@ -2528,10 +2537,11 @@ public function replymessage_food1($replyToken,$user)
       {
             // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
             // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-            $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-            $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
-            $textMessageBuilder = new TemplateMessageBuilder('Image Carousel',
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
+        $textMessageBuilder = new TemplateMessageBuilder('Image Carousel',
         new ImageCarouselTemplateBuilder(
             array(
                 new ImageCarouselColumnTemplateBuilder(
@@ -2579,9 +2589,10 @@ public function replymessage_food1($replyToken,$user)
       {
             // $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
             // $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-            $httpClient = new CurlHTTPClient('UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=');
-            $bot = new LINEBot($httpClient, array('channelSecret' => 'a06f8f521aabe202f1ce7427b4e52d1b'));
-
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
             $textMessageBuilder = new TemplateMessageBuilder('Image Carousel',
         new ImageCarouselTemplateBuilder(
             array(
@@ -4795,15 +4806,12 @@ public function replymessage_food1($replyToken,$user)
    echo $result . "\r\n";
  }
 
-
-
-
-
-
  public function quick_reply($replyToken,$user){
-        $httpClient = new CurlHTTPClient(LINE_MESSAGE_ACCESS_TOKEN);
-        $bot = new LINEBot($httpClient, array('channelSecret' => LINE_MESSAGE_CHANNEL_SECRET));
-                
+  
+      $httpClient = new CurlHTTPClient(config('line.access_token'));
+      $bot = new LINEBot($httpClient, [
+          'channelSecret' => config('line.channel_secret')
+      ]);           
       // การใช้งาน postback action
       $graphbs =  new UriTemplateActionBuilder(
         'กราฟน้ำตาล', // ข้อความแสดงในปุ่ม

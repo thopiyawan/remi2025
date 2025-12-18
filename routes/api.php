@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\GetMessageController;
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\diaryController;
 
 use App\Models\pregnants as pregnants;
 use App\Models\RecordOfPregnancy as RecordOfPregnancy;
@@ -31,13 +33,10 @@ use App\Models\doctor as doctor;
 // });
 
 
-//Route::get('bot', function (Request $request) {
-//    logger("message request : ", $request->all());
-//});
-//Route::post('bot', ['as' => 'line.bot.message', 'uses' => 'GetMessageController@getmessage']);
-
-Route::post('bot', [GetMessageController::class, 'getmessage'])->name('line.bot.message');
-
+Route::get('bot', function (Request $request) {
+    logger("message request : ", $request->all());
+});
+Route::post('bot', ['as' => 'line.bot.message', 'uses' => 'GetMessageController@getmessage']);
 
 //Route::get('peat_api','ApiController@api');
 Route::get('peat_api', function (Request $request) {

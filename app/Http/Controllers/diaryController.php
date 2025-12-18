@@ -941,7 +941,6 @@ class diaryController extends Controller
         // สร้าง QR Code เป็น base64 image
         $qrBinary = QrCode::format('png')->size(300)->generate($id);
         $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
-        dd($qrBase64);
         return   $qrBase64;
     }
     // public function savediary_vitexc(Request $request)

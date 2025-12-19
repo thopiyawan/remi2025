@@ -91,7 +91,7 @@ class GetMessageController extends Controller {
      */
 //get message from line chatbot
 
-  public function getmessage(Request $request) { 
+  public function getmessage1(Request $request) { 
    // $channelSecret = '416b6bfedbae8e21c9d34b7094594319'; // ใส่ค่าจริง
    // $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
 
@@ -131,7 +131,7 @@ class GetMessageController extends Controller {
 
 
   }
-  public function getmessage1(Request $request) {         
+  public function getmessage(Request $request) {         
   
     // $httpClient = new CurlHTTPClient(config('line.access_token'));
     // $bot = new LINEBot($httpClient, [
@@ -161,17 +161,30 @@ class GetMessageController extends Controller {
     // } catch (\Exception $e) {
     //     return response()->json(['status' => 'invalid'], 400);
     // }
-         $channelSecret = '416b6bfedbae8e21c9d34b7094594319'; // ใส่ค่าจริง
-        $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
+    // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
+    $content = file_get_contents('php://input');
+        
+    // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
+    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
+    $signature = base64_encode($hash);
 
-        // 1. ดึงข้อมูลจาก Laravel Request
-        $content   = $request->getContent();
-        $signature = $request->header('x-line-signature');
+        // ⚠️ ต้องบรรทัดแรก
+    //$content   = $request->getContent();
+    //$signature = $request->header('x-line-signature');
 
-        // 2. ตรวจสอบว่าข้อมูลมาครบไหม
-        if (!$signature || !$content) {
-            return response()->json(['status' => 'missing_data'], 400);
-        }
+    \Log::info('LINE WEBHOOK', [
+        'len' => strlen($content),
+        'has_signature' => !empty($signature),
+        'method' => $request->method(),
+    ]);
+
+    if (!$content || !$signature) {
+        return response()->json(['status' => 'missing_data'], 400);
+    }
        
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
     $events = $bot->parseEventRequest($content, $signature);

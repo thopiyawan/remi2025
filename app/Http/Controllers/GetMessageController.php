@@ -107,6 +107,20 @@ class GetMessageController extends Controller {
     $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     $signature = base64_encode($hash);
 
+        // ⚠️ ต้องบรรทัดแรก
+    //$content   = $request->getContent();
+    //$signature = $request->header('x-line-signature');
+
+    \Log::info('LINE WEBHOOK', [
+        'len' => strlen($content),
+        'has_signature' => !empty($signature),
+        'method' => $request->method(),
+    ]);
+
+    if (!$content || !$signature) {
+        return response()->json(['status' => 'missing_data'], 400);
+    }
+
     return response()->json([
         'has_body'      => !empty($content),
         'has_signature' => !empty($signature),

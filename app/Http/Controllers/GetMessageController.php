@@ -135,55 +135,14 @@ class GetMessageController extends Controller {
                   $replyToken = $eventObj->getReplyToken();
                   $userId     = $eventObj->getUserId();
                   $text       = $eventObj->getText();
+                  $bot = new LINEBot($httpClient, [
+                              'channelSecret' => config('line.channel_secret')
+                          ]);
 
-                  // $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
-
-                  // $bot->replyMessage(
-                  //     $replyToken,
-                  //     new TextMessageBuilder($replyText)
-                  // );
-
-                   $typeMessage = $eventObj->getMessageType();  
-                  //  text | image | sticker | location | audio | video | imagemap | template 
-                  // ถ้าเป็นข้อความ
-                  if($typeMessage=='text') {
-                        if(!is_null($events)) {
-                            $replyToken = $eventObj->getReplyToken(); 
-                            $userMessage = $eventObj->getText();
-                            $user = $eventObj->getUserId();
-                        }
-                       return $this->checkmessage($replyToken,$userMessage,$user,$bot );
-                  }
-                  // ถ้าเป็น sticker
-                  elseif($typeMessage=='sticker'){
-                           $replyToken = $eventObj->getReplyToken(); 
-                           $case = 29 ;
-                           $userMessage= '0';
-                           return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case);
-                  }
-                  // ถ้าเป็น location
-                elseif($typeMessage=='image'){
-                 $replyToken = $eventObj->getReplyToken(); 
-                 $response = $bot->getMessageContent($idMessage);
-                    if ($response->isSucceeded()) {
-                              // คำสั่ง getRawBody() ในกรณีนี้ จะได้ข้อมูลส่งกลับมาเป็น binary 
-                              // เราสามารถเอาข้อมูลไปบันทึกเป็นไฟล์ได้
-                              $dataBinary = $response->getRawBody(); // return binary
-                              // ทดสอบดูค่าของ header ด้วยคำสั่ง getHeaders()
-                              $dataHeader = $response->getHeaders();   
-                              $replyData = new TextMessageBuilder(json_encode($dataHeader));
-                              $case = 1;
-                              $userMessage= $replyData;
-                            return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case);
-                          
-                    }
-                              $case = 1;
-
-                          $userMessage= $response;
-                          return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case);
-                }  
+                  $this->checkmessage($replyToken, $userMessage, $user, $bot);
+                  continue;
+           
               }
-
               // ➕ กรณีปลดบล็อค / add friend
               if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
 

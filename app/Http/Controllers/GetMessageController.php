@@ -148,7 +148,7 @@ class GetMessageController extends Controller {
               if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
 
                   $replyToken = $eventObj->getReplyToken();
-                  $userId     = $eventObj->getUserId();
+                  $user     = $eventObj->getUserId();
                   $users_register = (new SqlController)->users_register_select($user);
                   if(is_null($users_register)){
                     //ยังไม่ลงทะเบียน

@@ -129,32 +129,46 @@ class GetMessageController extends Controller {
         // ✅ รองรับหลาย event
         foreach ($events as $eventObj) {
 
-            // 👉 เอาเฉพาะ text message
-            
-            if ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
+          // 📩 กรณีพิมพ์ข้อความ
+              if ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
 
-                $replyToken = $eventObj->getReplyToken();
-                $userId     = $eventObj->getUserId();
-                $text       = $eventObj->getText();
+                  $replyToken = $eventObj->getReplyToken();
+                  $userId     = $eventObj->getUserId();
+                  $text       = $eventObj->getText();
 
-                // 🧪 ลองส่งกลับไปที่ bot
-                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
+                  $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
 
-                $bot->replyMessage(
-                    $replyToken,
-                    new TextMessageBuilder($replyText)
-                );
-            }
+                  $bot->replyMessage(
+                      $replyToken,
+                      new TextMessageBuilder($replyText)
+                  );
+              }
 
-            if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
-                 $replyText = "follow: {$text}";
+              // ➕ กรณีปลดบล็อค / add friend
+              if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
 
-                $bot->replyMessage(
-                    $replyToken,
-                    new TextMessageBuilder($replyText)
-                );
-            }
+                  $replyToken = $eventObj->getReplyToken();
+                  $userId     = $eventObj->getUserId();
+
+                  $replyText = "ขอบคุณที่เพิ่มเพื่อนครับ 🙏";
+
+                  $bot->replyMessage(
+                      $replyToken,
+                      new TextMessageBuilder($replyText)
+                  );
+              }
+
+              // 🚫 กรณีบล็อค (unfollow) — ห้าม reply
+              if ($eventObj instanceof \LINE\LINEBot\Event\UnfollowEvent) {
+
+                  $userId = $eventObj->getUserId();
+
+                  \Log::info('USER UNFOLLOW', ['user' => $userId]);
+
+                  // ❌ ห้าม reply
+              }
         }
+
 
         return response()->json(['status' => 'success'], 200);
   }

@@ -68,6 +68,8 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
+use LINE\LINEBot\Event\Parser\EventRequestParser;
+
 
 use Session;
 
@@ -88,7 +90,7 @@ class GetMessageController extends Controller {
      * @var GetMessageService
      */
 //get message from line chatbot
-  public function getmessage() {         
+  public function getmessage(Request $request) {         
   
     // $httpClient = new CurlHTTPClient(config('line.access_token'));
     // $bot = new LINEBot($httpClient, [

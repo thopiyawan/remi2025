@@ -68,7 +68,6 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
-use LINE\LINEBot\Event\Parser\EventRequestParser;
 
 use Session;
 
@@ -89,7 +88,7 @@ class GetMessageController extends Controller {
      * @var GetMessageService
      */
 //get message from line chatbot
-  public function getmessage(Request $request) {         
+  public function getmessage() {         
   
     $httpClient = new CurlHTTPClient(config('line.access_token'));
     $bot = new LINEBot($httpClient, [
@@ -101,53 +100,10 @@ class GetMessageController extends Controller {
     // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
     $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     $signature = base64_encode($hash);
-
-    // $body = $request->getContent();
-    // $signature = $request->header('X-Line-Signature');    
-    // // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
-    // //$events = $bot->parseEventRequest($content, $signature);
-    // try {
-    //         $events = EventRequestParser::parseEventRequest(
-    //             $body,
-    //             $signature,
-    //             config('line.channel_secret')
-    //         );
-    //     } catch (\Exception $e) {
-    //         logger('LINE ERROR', ['error' => $e->getMessage()]);
-    //         return response()->json(['status' => 'invalid'], 400);
-    //     }
-
-
-        // 1. ดึง Raw Body จาก LINE มาให้ชัดเจน (ห้ามตกหล่นแม้แต่ช่องว่างเดียว)
-        $body = $request->getContent();
-
-        // 2. ดึง Signature จาก Header (ต้องเป็นตัวพิมพ์เล็ก-ใหญ่ที่ถูกต้อง)
-        $signature = $request->header('X-Line-Signature');    
-
-        // 3. ตรวจสอบว่ามีค่าครบหรือไม่ก่อนจะ Parse
-        if (empty($body) || empty($signature)) {
-            logger('LINE ERROR', ['error' => 'Missing body or signature']);
-            return response()->json(['status' => 'missing_data'], 400);
-        }
-
-        try {
-            // 4. ใช้ค่า $body และ $signature ที่ดึงมาล่าสุดส่งเข้าไป
-            $events = EventRequestParser::parseEventRequest(
-                $body, 
-                $signature, 
-                config('line.channel_secret')
-            );
-        } catch (\Exception $e) {
-            // หากพังตรงนี้ ให้เช็คค่า config('line.channel_secret') เป็นอันดับแรก
-            logger('LINE ERROR', ['error' => $e->getMessage()]);
-            return response()->json(['status' => 'invalid'], 400);
-        }
-
-
-
+               
+    // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
+    $events = $bot->parseEventRequest($content, $signature);
     $eventObj = $events[0]; // Event Object ของ array แรก
-
-    
                
     // ดึงค่าประเภทของ Event มาไว้ในตัวแปร มีทั้งหมด 7 event
     $eventType = $eventObj->getType();

@@ -128,34 +128,17 @@ class GetMessageController extends Controller {
 
         // ✅ รองรับหลาย event
         foreach ($events as $eventObj) {
-          $eventType = $eventObj->getType();
-          $replyToken = $eventObj->getReplyToken();
-          $user = $eventObj->getUserId();
 
             // 👉 เอาเฉพาะ text message
-          if ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
+            
             if ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-                $text = $eventObj->getText();
-            }
 
-            $users_register = (new SqlController)->users_register_select($user);
-            if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
-                     if(is_null($users_register)){
-                      //ยังไม่ลงทะเบียน
-                        $userMessage  = 'ยังไม่ลงทะเบียน';
-                        $case = 6; 
-                    }else{
-                        $update = 6;
-                        $update_preg =  (new CalController)->pregnancy_calculator_block($user);
-                        $answer = $update_preg;
-                        $user_update = (new SqlController)->user_update($user,$answer,$update); 
-                        $userMessage = 'สวัสดีค่ะ เรมี่คิดถึงคุณแม่มากๆเลยค่ะ';
-                        $case = 1;
+                $replyToken = $eventObj->getReplyToken();
+                $userId     = $eventObj->getUserId();
+                $text       = $eventObj->getText();
 
-                      // $userMessage  = 'ลงทะเบียนแล้ว';
-                    }
-
-                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$userMessage}";
+                // 🧪 ลองส่งกลับไปที่ bot
+                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
 
                 $bot->replyMessage(
                     $replyToken,
@@ -163,25 +146,18 @@ class GetMessageController extends Controller {
                 );
             }
 
-            if ($eventObj instanceof \LINE\LINEBot\Event\PostbackEvent) {
-                $data = $eventObj->getPostbackData();
+            if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
+                 $replyText = "follow: {$text}";
+
+                $bot->replyMessage(
+                    $replyToken,
+                    new TextMessageBuilder($replyText)
+                );
             }
-                // $replyToken = $eventObj->getReplyToken();
-                // $userId     = $eventObj->getUserId();
-                // $text       = $eventObj->getText();
-
-                // 🧪 ลองส่งกลับไปที่ bot
-               
-                
-
-          }
         }
 
         return response()->json(['status' => 'success'], 200);
   }
-
-
-  
   public function getmessage1(Request $request) {         
   
      // ✅ ต้องบรรทัดแรก

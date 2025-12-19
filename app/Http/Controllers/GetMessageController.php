@@ -89,7 +89,7 @@ class GetMessageController extends Controller {
      * @var GetMessageService
      */
 //get message from line chatbot
-  public function getmessage() {         
+  public function getmessage(Request $request) {         
   
     $httpClient = new CurlHTTPClient(config('line.access_token'));
     $bot = new LINEBot($httpClient, [
@@ -101,7 +101,7 @@ class GetMessageController extends Controller {
     // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
     $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     $signature = base64_encode($hash);
-    
+
     $body = $request->getContent();
     $signature = $request->header('X-Line-Signature');    
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object

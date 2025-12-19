@@ -103,24 +103,35 @@ class GetMessageController extends Controller {
     // $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     // $signature = base64_encode($hash);
 
-    $httpClient = new CurlHTTPClient(config('line.access_token'));
-    $bot = new LINEBot($httpClient, [
-        'channelSecret' => config('line.channel_secret'),
-    ]);
+    // $httpClient = new CurlHTTPClient(config('line.access_token'));
+    // $bot = new LINEBot($httpClient, [
+    //     'channelSecret' => config('line.channel_secret'),
+    // ]);
 
-    $signature = $request->header('X-Line-Signature');
-    $body = $request->getContent();
+    // $signature = $request->header('X-Line-Signature');
+    // $body = $request->getContent();
 
-    try {
-        $events = EventRequestParser::parseEventRequest(
-            $body,
-            $signature,
-            config('line.channel_secret')
-        );
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'invalid'], 400);
-    }
-               
+    // try {
+    //     $events = EventRequestParser::parseEventRequest(
+    //         $body,
+    //         $signature,
+    //         config('line.channel_secret')
+    //     );
+    // } catch (\Exception $e) {
+    //     return response()->json(['status' => 'invalid'], 400);
+    // }
+         $channelSecret = '416b6bfedbae8e21c9d34b7094594319'; // ใส่ค่าจริง
+        $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
+
+        // 1. ดึงข้อมูลจาก Laravel Request
+        $content   = $request->getContent();
+        $signature = $request->header('x-line-signature');
+
+        // 2. ตรวจสอบว่าข้อมูลมาครบไหม
+        if (!$signature || !$content) {
+            return response()->json(['status' => 'missing_data'], 400);
+        }
+       
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
     $events = $bot->parseEventRequest($content, $signature);
     $eventObj = $events[0]; // Event Object ของ array แรก

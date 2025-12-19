@@ -154,6 +154,13 @@ class GetMessageController extends Controller {
 
                       // $userMessage  = 'ลงทะเบียนแล้ว';
                     }
+
+                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$userMessage}";
+
+                $bot->replyMessage(
+                    $replyToken,
+                    new TextMessageBuilder($replyText)
+                );
             }
 
             if ($eventObj instanceof \LINE\LINEBot\Event\PostbackEvent) {
@@ -164,12 +171,9 @@ class GetMessageController extends Controller {
                 // $text       = $eventObj->getText();
 
                 // 🧪 ลองส่งกลับไปที่ bot
-                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
+               
+                
 
-                $bot->replyMessage(
-                    $replyToken,
-                    new TextMessageBuilder($replyText)
-                );
           }
         }
 

@@ -164,12 +164,12 @@ class GetMessageController extends Controller {
 
                     // $userMessage  = 'ลงทะเบียนแล้ว';
                   }
-                  // $replyText = "ขอบคุณที่เพิ่มเพื่อนครับ 🙏";
-                  // $bot->replyMessage(
-                  //     $replyToken,
-                  //     new TextMessageBuilder($replyText)
-                  // );
-                  return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case,$user);   
+                  $replyText = $userMessage;
+                  $bot->replyMessage(
+                      $replyToken,
+                      new TextMessageBuilder($replyText)
+                  );
+                 // return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case,$user);   
 
               }
 

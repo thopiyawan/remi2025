@@ -135,10 +135,10 @@ class GetMessageController extends Controller {
                   $replyToken = $eventObj->getReplyToken();
                   $userId     = $eventObj->getUserId();
                   $text       = $eventObj->getText();
+                  $httpClient = new CurlHTTPClient(config('line.access_token'));
                   $bot = new LINEBot($httpClient, [
-                              'channelSecret' => config('line.channel_secret')
-                          ]);
-
+                      'channelSecret' => config('line.channel_secret')
+                  ]);
                   $this->checkmessage($replyToken, $text, $userId, $bot);
                   continue;
            

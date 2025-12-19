@@ -99,53 +99,14 @@ class GetMessageController extends Controller {
    $content   = $request->getContent();
     $signature = $request->header('x-line-signature');
 
-    // 🔍 DEBUG MODE (เปิดเฉพาะตอนต้องการ)
-    if (config('app.debug')) {
-        \Log::info('LINE WEBHOOK DEBUG', [
-            'has_body'      => !empty($content),
-            'has_signature' => !empty($signature),
-            'content_type'  => $request->header('content-type'),
-            'user_agent'    => $request->header('user-agent'),
-        ]);
-    }
-
-    // ❌ ข้อมูลไม่ครบ
-    if (!$signature || !$content) {
-        return response()->json(['status' => 'missing_data'], 400);
-    }
-
-    $httpClient = new CurlHTTPClient(config('services.line.channel_token'));
-    $bot = new LINEBot($httpClient, [
-        'channelSecret' => config('services.line.channel_secret'),
+    return response()->json([
+        'has_body'      => !empty($content),
+        'has_signature' => !empty($signature),
+        'content_len'   => strlen($content),
+        'headers'       => array_keys($request->headers->all()),
     ]);
 
-    try {
-        $events = $bot->parseEventRequest($content, $signature);
 
-        foreach ($events as $event) {
-            // handle event
-        }
-
-        return response()->json(['status' => 'ok'], 200);
-
-    } catch (InvalidSignatureException $e) {
-
-        // 🔥 debug ตอน signature ผิด
-        \Log::error('LINE INVALID SIGNATURE', [
-            'body_length' => strlen($content),
-            'signature'   => $signature,
-        ]);
-
-        return response()->json(['status' => 'invalid_signature'], 400);
-
-    } catch (\Exception $e) {
-
-        \Log::error('LINE WEBHOOK ERROR', [
-            'message' => $e->getMessage(),
-        ]);
-
-        return response()->json(['status' => 'error'], 500);
-    } 
 
   }
   public function getmessage1(Request $request) {         

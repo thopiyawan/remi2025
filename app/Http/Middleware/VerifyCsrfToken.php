@@ -16,6 +16,7 @@ class VerifyCsrfToken extends Middleware
         '/doctor_login',
         'doctor_register',
         '/weight_warning',
-        'bot'
+        'bot',
+        'api/bot'
     ];
 }

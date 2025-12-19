@@ -96,8 +96,16 @@ class GetMessageController extends Controller {
    // $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
 
 
-   $content   = $request->getContent();
-    $signature = $request->header('x-line-signature');
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
+    // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
+    $content = file_get_contents('php://input');
+        
+    // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
+    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
+    $signature = base64_encode($hash);
 
     return response()->json([
         'has_body'      => !empty($content),

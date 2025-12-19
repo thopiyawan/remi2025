@@ -149,22 +149,35 @@ class GetMessageController extends Controller {
 
                   $replyToken = $eventObj->getReplyToken();
                   $userId     = $eventObj->getUserId();
+                  $users_register = (new SqlController)->users_register_select($user);
+                  if(is_null($users_register)){
+                    //ยังไม่ลงทะเบียน
+                      $userMessage  = 'ยังไม่ลงทะเบียน';
+                      $case = 6; 
+                  }else{
+                      $update = 6;
+                      $update_preg =  (new CalController)->pregnancy_calculator_block($user);
+                      $answer = $update_preg;
+                      $user_update = (new SqlController)->user_update($user,$answer,$update); 
+                      $userMessage = 'สวัสดีค่ะ เรมี่คิดถึงคุณแม่มากๆเลยค่ะ';
+                      $case = 1;
 
-                  $replyText = "ขอบคุณที่เพิ่มเพื่อนครับ 🙏";
+                    // $userMessage  = 'ลงทะเบียนแล้ว';
+                  }
+                  // $replyText = "ขอบคุณที่เพิ่มเพื่อนครับ 🙏";
+                  // $bot->replyMessage(
+                  //     $replyToken,
+                  //     new TextMessageBuilder($replyText)
+                  // );
+                  return (new ReplyMessageController)->replymessage($replyToken,$userMessage,$case,$user);   
 
-                  $bot->replyMessage(
-                      $replyToken,
-                      new TextMessageBuilder($replyText)
-                  );
               }
 
               // 🚫 กรณีบล็อค (unfollow) — ห้าม reply
               if ($eventObj instanceof \LINE\LINEBot\Event\UnfollowEvent) {
 
                   $userId = $eventObj->getUserId();
-
                   \Log::info('USER UNFOLLOW', ['user' => $userId]);
-
                   // ❌ ห้าม reply
               }
         }

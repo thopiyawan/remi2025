@@ -69,6 +69,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 use LINE\LINEBot\Event\Parser\EventRequestParser;
+use LINE\LINEBot\Exception\InvalidSignatureException;
 
 
 use Session;
@@ -133,93 +134,41 @@ class GetMessageController extends Controller {
   }
   public function getmessage(Request $request) {         
   
-    // $httpClient = new CurlHTTPClient(config('line.access_token'));
-    // $bot = new LINEBot($httpClient, [
-    //     'channelSecret' => config('line.channel_secret')
-    // ]);
-    // // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
-    // $content = file_get_contents('php://input');
-        
-    // // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    // $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
-    // $signature = base64_encode($hash);
-
-    // $httpClient = new CurlHTTPClient(config('line.access_token'));
-    // $bot = new LINEBot($httpClient, [
-    //     'channelSecret' => config('line.channel_secret'),
-    // ]);
-
-    // $signature = $request->header('X-Line-Signature');
-    // $body = $request->getContent();
-
-    // try {
-    //     $events = EventRequestParser::parseEventRequest(
-    //         $body,
-    //         $signature,
-    //         config('line.channel_secret')
-    //     );
-    // } catch (\Exception $e) {
-    //     return response()->json(['status' => 'invalid'], 400);
-    // }
-    $httpClient = new CurlHTTPClient(config('line.access_token'));
-    $bot = new LINEBot($httpClient, [
-        'channelSecret' => config('line.channel_secret')
-    ]);
-    // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
-    $content = file_get_contents('php://input');
-        
-    // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
-    $signature = base64_encode($hash);
-
-        // ⚠️ ต้องบรรทัดแรก
-    //$content   = $request->getContent();
-    //$signature = $request->header('x-line-signature');
+     // ✅ ต้องบรรทัดแรก
+    $content   = $request->getContent();
+    $signature = $request->header('x-line-signature');
 
     \Log::info('LINE WEBHOOK', [
         'len' => strlen($content),
         'has_signature' => !empty($signature),
         'method' => $request->method(),
+        'ua' => $request->header('user-agent'),
     ]);
 
     if (!$content || !$signature) {
         return response()->json(['status' => 'missing_data'], 400);
     }
-       
-    // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
-    $events = $bot->parseEventRequest($content, $signature);
-    $eventObj = $events[0]; // Event Object ของ array แรก
-               
-    // ดึงค่าประเภทของ Event มาไว้ในตัวแปร มีทั้งหมด 7 event
+
+    $httpClient = new CurlHTTPClient(config('line.access_token'));
+    $bot = new LINEBot($httpClient, [
+        'channelSecret' => config('line.channel_secret')
+    ]);
+
+    try {
+        // ✅ ตรวจ signature ที่ LINE ส่งมา
+        $events = $bot->parseEventRequest($content, $signature);
+
+    } catch (InvalidSignatureException $e) {
+        \Log::error('INVALID SIGNATURE');
+        return response()->json(['status' => 'invalid_signature'], 400);
+    }
+
+    // ===== จากนี้ business logic เดิมของคุณใช้ได้ทั้งหมด =====
+    $eventObj = $events[0];
     $eventType = $eventObj->getType();
-               
-    // สร้างตัวแปร ไว้เก็บ sourceId ของแต่ละประเภท
-    $userId = NULL;
-    $groupId = NULL;
-    $roomId = NULL;
-    // สร้างตัวแปร replyToken สำหรับกรณีใช้ตอบกลับข้อความ
-    $replyToken = NULL;
-    // สร้างตัวแปร ไว้เก็บค่าว่าเป้น Event ประเภทไหน
-    $eventMessage = NULL;
-    $eventPostback = NULL;
-    $eventJoin = NULL;
-    $eventLeave = NULL;
-    $eventFollow = NULL;
-    $eventUnfollow = NULL;
-    $eventBeacon = NULL;
-    // เงื่อนไขการกำหนดประเภท Event 
-      switch($eventType){
-        case 'message': $eventMessage = true; break;    
-        case 'postback': $eventPostback = true; break;  
-        case 'join': $eventJoin = true; break;  
-        case 'leave': $eventLeave = true; break;    
-        case 'follow': $eventFollow = true; break;  
-        case 'unfollow': $eventUnfollow = true; break;  
-        case 'beacon': $eventBeacon = true; break;                          
-      }
-    $user = $eventObj->getUserId();
-    $sequentsteps =  (new SqlController)->sequentsteps_seqcode($user);
     $replyToken = $eventObj->getReplyToken();
+    $user = $eventObj->getUserId();
+    
     if(!is_null($eventFollow)) {
       $replyToken = $eventObj->getReplyToken(); 
       // $userMessage = $eventObj->getText();

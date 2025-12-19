@@ -90,7 +90,46 @@ class GetMessageController extends Controller {
      * @var GetMessageService
      */
 //get message from line chatbot
-  public function getmessage(Request $request) {         
+
+  public function getmessage(Request $request) { 
+    $channelSecret = '416b6bfedbae8e21c9d34b7094594319'; // ใส่ค่าจริง
+    $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
+
+
+    // 1. ดึงข้อมูลจาก Laravel Request
+    $content   = $request->getContent();
+    $signature = $request->header('x-line-signature');
+
+    // 2. ตรวจสอบว่าข้อมูลมาครบไหม
+    if (!$signature || !$content) {
+        return response()->json(['status' => 'missing_data'], 400);
+    }
+
+    // 3. สร้าง Object ตามมาตรฐาน SDK v7
+    $httpClient = new CurlHTTPClient($channelToken);
+    $bot = new LINEBot($httpClient, ['channelSecret' => $channelSecret]);
+
+    try {
+        // 4. ใช้ฟังก์ชัน parseEventRequest ของตัว $bot เอง
+        // วิธีนี้จะช่วยลดความผิดพลาดในการคำนวณ Hash ด้วยมือ
+        $events = $bot->parseEventRequest($content, $signature);
+
+        foreach ($events as $event) {
+            // โค้ดตอบกลับของคุณ
+            // ตัวอย่าง: if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) { ... }
+        }
+
+        return response()->json(['status' => 'success'], 200);
+
+    } catch (\LINE\LINEBot\Exception\InvalidSignatureException $e) {
+        // ถ้าตกมาที่นี่ แสดงว่า Secret ผิด หรือข้อมูล Body ถูกดัดแปลง
+        return response()->json(['status' => 'invalid_signature'], 400);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error'], 500);
+    }   
+
+  }
+  public function getmessage1(Request $request) {         
   
     // $httpClient = new CurlHTTPClient(config('line.access_token'));
     // $bot = new LINEBot($httpClient, [

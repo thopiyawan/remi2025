@@ -217,3 +217,6 @@ Route::delete('remove/{id}', [ApiController::class, 'remove_user'])
 Route::get('edit', function () {
     return view('management.login_edit');
 });
+
+
+Route::get('testa/{id}', [SqlController::class, 'users_register_select']);

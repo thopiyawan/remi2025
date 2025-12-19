@@ -68,6 +68,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
+use LINE\LINEBot\Event\Parser\EventRequestParser;
 
 use Session;
 
@@ -100,10 +101,28 @@ class GetMessageController extends Controller {
     // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
     $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
     $signature = base64_encode($hash);
-               
+    
+    $body = $request->getContent();
+    $signature = $request->header('X-Line-Signature');    
     // แปลงค่าข้อมูลที่ได้รับจาก LINE เป็น array ของ Event Object
-    $events = $bot->parseEventRequest($content, $signature);
+    //$events = $bot->parseEventRequest($content, $signature);
+    try {
+            $events = EventRequestParser::parseEventRequest(
+                $body,
+                $signature,
+                config('line.channel_secret')
+            );
+        } catch (\Exception $e) {
+            logger('LINE ERROR', ['error' => $e->getMessage()]);
+            return response()->json(['status' => 'invalid'], 400);
+        }
+
+
+
+
     $eventObj = $events[0]; // Event Object ของ array แรก
+
+    
                
     // ดึงค่าประเภทของ Event มาไว้ในตัวแปร มีทั้งหมด 7 event
     $eventType = $eventObj->getType();

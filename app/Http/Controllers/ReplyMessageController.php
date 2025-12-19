@@ -1051,7 +1051,7 @@ class ReplyMessageController extends Controller
                                     // ),
                                     new UriTemplateActionBuilder(
                                         'สนใจ', // ข้อความแสดงในปุ่ม
-                                        'line://app/1539139857-lEpd7MrZ'
+                                        'https://liff.line.me/1656991660-Px9gqmQB'
                                   ),
                                     new MessageTemplateActionBuilder(
                                         'ไม่สนใจ',

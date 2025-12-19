@@ -92,47 +92,65 @@ class GetMessageController extends Controller {
      */
 //get message from line chatbot
 
-  public function getmessage1(Request $request) { 
-   // $channelSecret = '416b6bfedbae8e21c9d34b7094594319'; // ใส่ค่าจริง
-   // $channelToken  = 'kFURnNZcYnetnb+4xw9pt1Wr1P2FoAxCFOQyhJiwwVUU1kAa/2EecTodZrEH6ntfoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AxOUU8VeW8tEZgnztyZPkDlAqKEmz/xsgyOOtECTk1RPVGUYhWQfeY8sLGRXgo3xvw='; // ใส่ค่าจริง
+  public function getmessage(Request $request) { 
+        // ✅ ต้องบรรทัดแรก
+        $content   = $request->getContent();
+        $signature = $request->header('x-line-signature');
 
+        \Log::info('LINE WEBHOOK', [
+            'len' => strlen($content),
+            'has_signature' => !empty($signature),
+            'method' => $request->method(),
+            'ua' => $request->header('user-agent'),
+        ]);
 
-    $httpClient = new CurlHTTPClient(config('line.access_token'));
-    $bot = new LINEBot($httpClient, [
-        'channelSecret' => config('line.channel_secret')
-    ]);
-    // คำสั่งรอรับการส่งค่ามาของ LINE Messaging API
-    $content = file_get_contents('php://input');
-        
-    // กำหนดค่า signature สำหรับตรวจสอบข้อมูลที่ส่งมาว่าเป็นข้อมูลจาก LINE
-    $hash = hash_hmac('sha256', $content, config('line.channel_secret'), true);
-    $signature = base64_encode($hash);
+        if (!$content || !$signature) {
+            return response()->json(['status' => 'missing_data'], 400);
+        }
 
-        // ⚠️ ต้องบรรทัดแรก
-    //$content   = $request->getContent();
-    //$signature = $request->header('x-line-signature');
+        $httpClient = new CurlHTTPClient(config('line.access_token'));
+        $bot = new LINEBot($httpClient, [
+            'channelSecret' => config('line.channel_secret')
+        ]);
 
-    \Log::info('LINE WEBHOOK', [
-        'len' => strlen($content),
-        'has_signature' => !empty($signature),
-        'method' => $request->method(),
-    ]);
+        try {
+            $events = $bot->parseEventRequest($content, $signature);
+        } catch (InvalidSignatureException $e) {
+            \Log::error('INVALID SIGNATURE');
+            return response()->json(['status' => 'invalid_signature'], 400);
+        }
 
-    if (!$content || !$signature) {
-        return response()->json(['status' => 'missing_data'], 400);
-    }
+        // ✅ ป้องกัน events ว่าง
+        if (empty($events)) {
+            \Log::info('LINE WEBHOOK: no events');
+            return response()->json(['status' => 'ok'], 200);
+        }
 
-    return response()->json([
-        'has_body'      => !empty($content),
-        'has_signature' => !empty($signature),
-        'content_len'   => strlen($content),
-        'headers'       => array_keys($request->headers->all()),
-    ]);
+        // ✅ รองรับหลาย event
+        foreach ($events as $eventObj) {
 
+            // 👉 เอาเฉพาะ text message
+            if ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
+
+                $replyToken = $eventObj->getReplyToken();
+                $userId     = $eventObj->getUserId();
+                $text       = $eventObj->getText();
+
+                // 🧪 ลองส่งกลับไปที่ bot
+                $replyText = "BOT ตอบแล้วครับ ✅\nคุณพิมพ์ว่า: {$text}";
+
+                $bot->replyMessage(
+                    $replyToken,
+                    new TextMessageBuilder($replyText)
+                );
+            }
+        }
+
+        return response()->json(['status' => 'success'], 200);
 
 
   }
-  public function getmessage(Request $request) {         
+  public function getmessage1(Request $request) {         
   
      // ✅ ต้องบรรทัดแรก
     $content   = $request->getContent();
@@ -168,7 +186,7 @@ class GetMessageController extends Controller {
     $eventType = $eventObj->getType();
     $replyToken = $eventObj->getReplyToken();
     $user = $eventObj->getUserId();
-    
+
     if(!is_null($eventFollow)) {
       $replyToken = $eventObj->getReplyToken(); 
       // $userMessage = $eventObj->getText();

@@ -139,7 +139,7 @@ class GetMessageController extends Controller {
                               'channelSecret' => config('line.channel_secret')
                           ]);
 
-                  $this->checkmessage($replyToken, $userMessage, $user, $bot);
+                  $this->checkmessage($replyToken, $text, $userId, $bot);
                   continue;
            
               }

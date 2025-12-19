@@ -157,8 +157,8 @@ Route::get('graph/{id}', [noticeController::class, 'graph']);
 // Route::post('bot', [GetMessageController::class, 'getmessage'])
 //     ->name('line.bot.message');
 
-Route::post('/bot', [GetMessageController::class, 'getmessage']);
-Route::get('/bot', [GetMessageController::class, 'getmessage']);
+Route::post('bot', [GetMessageController::class, 'getmessage']);
+Route::get('bot', [GetMessageController::class, 'getmessage']);
 
 Route::get('peat_api', function (Request $request) {
     logger('message request : ', $request->all());

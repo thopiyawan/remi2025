@@ -847,6 +847,21 @@ class SqlController extends Controller
         return $blood_sugar;
     }
 
+    public function test_sql($user){
+        $user_name = $userMessage;
+        $case = 1;
+        $seqcode = '0007';
+        $nextseqcode = '0009';
+        $userMessage  = (new SqlController)->sequents_question($seqcode);
+        $sequentsteps_insert =  (new SqlController)->sequentsteps_update($user,$seqcode,$nextseqcode);
+        $user_insert = (new SqlController)->user_insert($user,$user_name);
+        return response()->json([
+         'message1' => $userMessage,
+         'message2' => $sequentsteps_insert,
+         'message3' => $user_insert 
+       ]);
+    }
+
 
 
 

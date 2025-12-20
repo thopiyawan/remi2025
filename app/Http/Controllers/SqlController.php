@@ -848,7 +848,7 @@ class SqlController extends Controller
     }
 
     public function test_sql($user){
-        $user_name = $userMessage;
+        $user_name = "ทดสอบ";
         $case = 1;
         $seqcode = '0007';
         $nextseqcode = '0009';

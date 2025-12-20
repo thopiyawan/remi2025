@@ -848,17 +848,86 @@ class SqlController extends Controller
     }
 
     public function test_sql($user){
-        $user_name = "ทดสอบ";
-        $case = 1;
-        $seqcode = '0007';
-        $nextseqcode = '0009';
-        $userMessage  = (new SqlController)->sequents_question($seqcode);
-        $sequentsteps_insert =  (new SqlController)->sequentsteps_update($user,$seqcode,$nextseqcode);
-        $user_insert = (new SqlController)->user_insert($user,$user_name);
+         $num = RecordOfPregnancy::where('user_id', $user)
+                                      ->whereNull('deleted_at')
+                                      ->count();
+        
+                    $users_register = (new SqlController)->users_register_select($user);
+                    $preg_week = $users_register->preg_week;
+                    $user_Pre_weight = $users_register->user_Pre_weight;
+                    $user_weight = $users_register->user_weight;
+
+                    $user_height =  $users_register->user_height;
+                    $status =  $users_register->status;
+
+                    $bmi  = (new CalController)->bmi_calculator($user_Pre_weight,$user_height);
+                    
+                    $user_age =  $users_register->user_age;
+                    $active_lifestyle =  $users_register->active_lifestyle;
+                    $weight_criteria  = (new CalController)->weight_criteria($bmi);
+                    $weight_cur = $users_register->preg_week_str;
+                   
+                    $cal  = (new CalController)->cal_calculator($user_age,$active_lifestyle,$user_Pre_weight,$preg_week);
+
+                    $update = 22;
+                    $answer = $cal;
+                    $update_user = (new SqlController)->user_update($user,$answer,$update);
+
+                  if ($bmi>=24.9 ) {
+                      $text = 'น้ำหนักของคุณเกินเกณฑ์ ลองปรับการรับประทานอาหารหรือออกกำลังกายดูไหมคะ'."\n".
+                         'หากคุณแม่ไม่ทราบว่าจะทานอะไรดีหรือออกกำลังกายแบบไหนดีสามารถกดที่ MENU ด้านล่างได้เลยนะคะ';
+                  }else{
+                      $text = 'หากคุณแม่ไม่ทราบว่าจะทานอะไรดีหรือออกกำลังกายแบบไหนดีสามารถกดที่ MENU ด้านล่างได้เลยนะคะ';
+                  }
+            
+
+                  if($num <= 1){  
+                        $weight_status = NULL;
+                        $RecordOfPregnancy = (new SqlController)->RecordOfPregnancy_insert($preg_week, $user_weight,$user,$weight_status);
+                   }else{
+
+                    $RecordOfPregnancy = RecordOfPregnancy::where('user_id', $user)
+                         ->whereNull('deleted_at')
+                         ->orderBy('updated_at', 'asc')
+                         ->first();
+                    $created_at = $RecordOfPregnancy->created_at;
+                 
+                    $num1 =  RecordOfPregnancy::where('user_id', $user)
+                                      ->where('preg_week',$preg_week)
+                                      ->count(); 
+
+                        if($num1 <= 1){
+                                $weight_status = NULL;
+                                $RecordOfPregnancy = (new SqlController)->RecordOfPregnancy_insert($preg_week, $user_weight,$user,$weight_status);
+                        }else{
+
+                               $weight_status = NULL;
+                               $RecordOfPregnancy = RecordOfPregnancy::where('user_id', $user)
+                                                                      // ->where('created_at', $created_at)
+                                                                      ->where('preg_week',$preg_week)
+                                                                      ->update(['preg_weight' =>$user_weight,'preg_week' =>$preg_week,'weight_status'=>$weight_status]);
+
+                        }
+                          
+                   }
+                 if($status == '4'){
+                        $users_register = users_register::where('user_id', $user)
+                                                          ->whereNull('deleted_at')
+                                                          ->update(['status' => '1']);
+                             
+                 }
+      
+                  $format = (new SqlController)->sequentsteps_update2($user,$cal);
+                  $seqcode = '0000';
+                  $nextseqcode = '0000';
+                  $sequentsteps_insert =  (new SqlController)->sequentsteps_update($user,$seqcode,$nextseqcode);
+                  $replymessage = (new ReplyMessageController)->replymessage_result($replyToken,$preg_week,$bmi,$cal,$weight_criteria,$text,$user);
+
+      
         return response()->json([
-         'message1' => $userMessage,
-         'message2' => $sequentsteps_insert,
-         'message3' => $user_insert 
+         'message1' =>  $num,
+         'message2' =>  $bmi,
+         'message3' =>  $cal 
        ]);
     }
 

@@ -1603,7 +1603,7 @@ if(!is_null($events)){
                   $seqcode = '0000';
                   $nextseqcode = '0000';
                   $sequentsteps_insert =  (new SqlController)->sequentsteps_update($user,$seqcode,$nextseqcode);
-                  $a = (new ReplyMessageController)->replymessage_result($replyToken,$preg_week,$bmi,$cal,$weight_criteria,$text,$user);
+                  $replymessage = (new ReplyMessageController)->replymessage_result($replyToken,$preg_week,$bmi,$cal,$weight_criteria,$text,$user);
 
       
           

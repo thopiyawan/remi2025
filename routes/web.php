@@ -219,4 +219,4 @@ Route::get('edit', function () {
 });
 
 
-Route::get('testa/{id}', [SqlController::class, 'users_register_select']);
+Route::get('testa/{id}', [SqlController::class, 'test_sql']);

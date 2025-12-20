@@ -1496,7 +1496,7 @@ if(!is_null($events)){
                     //    $sequentsteps_insert =  $this->sequentsteps_update($user,$seqcode,$nextseqcode);
                     // }
                     //$userMessage  = (new checkmessageController)->user_data($user);
-                    (new ReplyMessageController)->resultinfo_regis($replyToken,$user);
+                 
                     $user_update = (new SqlController)->user_update($user,$answer,$update);
                     $seqcode = '0029';
                     $nextseqcode = '0031';
@@ -1508,6 +1508,7 @@ if(!is_null($events)){
                 //     $feq_ans_week =0;
                 //     $reward_ins =  (new SqlController)->ins_reward1($user,$point,$feq_ans_week,$feq_ans_meals);
                 // }
+                     $replymessage = (new ReplyMessageController)->resultinfo_regis($replyToken,$user);
 //verify
             }elseif (($userMessage == 'ยืนยันข้อมูล' && $sequentsteps->seqcode == '0029') || ($userMessage == 'ยืนยันข้อมูล' && $sequentsteps->seqcode == '0040' ) || $userMessage == 'ยืนยันข้อมูล' ) {
                       //Model::count()

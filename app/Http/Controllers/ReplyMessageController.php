@@ -831,10 +831,10 @@ class ReplyMessageController extends Controller
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';
+  // $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';
    
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -3350,9 +3350,9 @@ public function replymessage_food1($replyToken,$user)
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
+   //$access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -3748,9 +3748,9 @@ public function replymessage_food1($replyToken,$user)
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
+  //  $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -3907,9 +3907,9 @@ public function replymessage_food1($replyToken,$user)
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
+  //  $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -4065,9 +4065,9 @@ public function replymessage_food1($replyToken,$user)
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
+   //$access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -4602,9 +4602,9 @@ public function replymessage_food1($replyToken,$user)
     'to' => $user,
     'messages' => [$textMessageBuilder],
    ];
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
+  // $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';   
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -4791,10 +4791,10 @@ public function replymessage_food1($replyToken,$user)
    ];
 
   
-   $access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';
+   //$access_token = 'UWrfpYzUUCCy44R4SFvqITsdWn/PeqFuvzLwey51hlRA1+AX/jSyCVUY7V2bPTkuoaDzmp1AY5CfsgFTIinxzxIYViz+chHSXWsxZdQb5AyZu7U67A9f18NQKE/HfGNrZZrwNxWNUwVJf2AszEsCvgdB04t89/1O/w1cDnyilFU=';
    
    $post = json_encode($data);
-   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . $access_token);
+   $headers = array('Content-Type: application/json', 'Authorization: Bearer ' . config('line.access_token'));
    $ch = curl_init($url);
    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

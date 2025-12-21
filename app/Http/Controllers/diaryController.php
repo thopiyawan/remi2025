@@ -247,7 +247,7 @@ class diaryController extends Controller
         // END) AS status_lable'))->groupBy('datetime')
         // ->get();    
 
-      $blood_sugar = BloodSugar::where('user_id', $user_id)
+      $blood_sugar = blood_sugar::where('user_id', $user_id)
                     ->whereNull('deleted_at')
                     ->select(
                         'datetime',

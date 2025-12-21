@@ -1657,12 +1657,13 @@ class ReplyMessageController extends Controller
                    // $sq =  (new SqlController)->select_quizstep_user($user);
                    // $code_quiz1 = $sq->code_quiz;
                    // $reward_se =  (new SqlController)->reward_select($user,$code_quiz1);
-                   $reward_se =  (new SqlController)->reward_select1($user);
-                   $point = $reward_se->point;
-                   if($point==null)
-                    {
-                      $point = 0;
-                    }
+                //===============================================================================
+                  //  $reward_se =  (new SqlController)->reward_select1($user);
+                  //  $point = $reward_se->point;
+                  //  if($point==null)
+                  //   {
+                  //     $point = 0;
+                  //   }
                           $actionBuilder1 = array(
                             new MessageTemplateActionBuilder(
                                 'ดูบันทึกอาหาร', // ข้อความแสดงในปุ่ม
@@ -1724,20 +1725,20 @@ class ReplyMessageController extends Controller
                             ),
                            );
                            /////////reward//////////////
-                              $actionBuilder5 = array(
-                            new MessageTemplateActionBuilder(
-                                'เงื่อนไขการรับสิทธิ์', // ข้อความแสดงในปุ่ม
-                                'เงื่อนไขการรับสิทธิ์'
-                            ),
-                            new MessageTemplateActionBuilder(
-                                'แลกของรางวัล',// ข้อความแสดงในปุ่ม
-                                'แลกของรางวัล' // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
-                            ),
-                            new MessageTemplateActionBuilder(
-                                'ดูของรางวัล',// ข้อความแสดงในปุ่ม
-                                'ดูของรางวัล' // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
-                            ),
-                           );
+                          //     $actionBuilder5 = array(
+                          //   new MessageTemplateActionBuilder(
+                          //       'เงื่อนไขการรับสิทธิ์', // ข้อความแสดงในปุ่ม
+                          //       'เงื่อนไขการรับสิทธิ์'
+                          //   ),
+                          //   new MessageTemplateActionBuilder(
+                          //       'แลกของรางวัล',// ข้อความแสดงในปุ่ม
+                          //       'แลกของรางวัล' // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
+                          //   ),
+                          //   new MessageTemplateActionBuilder(
+                          //       'ดูของรางวัล',// ข้อความแสดงในปุ่ม
+                          //       'ดูของรางวัล' // ข้อความที่จะแสดงฝั่งผู้ใช้ เมื่อคลิกเลือก
+                          //   ),
+                          //  );
           
                         $textMessageBuilder = new TemplateMessageBuilder('Carousel',
                             new CarouselTemplateBuilder(

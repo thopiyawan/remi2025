@@ -247,26 +247,29 @@ class diaryController extends Controller
         // END) AS status_lable'))->groupBy('datetime')
         // ->get();    
 
-        $blood_sugar = blood_sugar::where('user_id', $user_id)
-            ->whereNull('deleted_at')
-            ->select(
-                'datetime',
-                \DB::raw("
-                    CASE
-                        WHEN (
-                            (meal = 4 AND blood_sugar > 120)
-                            OR (
-                                (time_of_day = 1 AND blood_sugar > 95)
-                                OR (time_of_day = 3 AND blood_sugar > 140)
-                            )
-                        ) THEN 'HIGHเกินเกณฑ์'
-                        WHEN blood_sugar < 60 THEN 'LOWต่ำกว่าเกณฑ์'
-                        ELSE 'NORMALปกติ'
-                    END AS status_lable
-                ")
-            )
-            ->orderBy('datetime')
-            ->get();
+      $blood_sugar = BloodSugar::where('user_id', $user_id)
+                    ->whereNull('deleted_at')
+                    ->select(
+                        'datetime',
+                        \DB::raw('MAX(meal) as meal'),
+                        \DB::raw('MAX(time_of_day) as time_of_day'),
+                        \DB::raw('MAX(blood_sugar) as blood_sugar'),
+                        \DB::raw("
+                            CASE
+                                WHEN (
+                                    (MAX(meal) = 4 AND MAX(blood_sugar) > 120)
+                                    OR (
+                                        (MAX(time_of_day) = 1 AND MAX(blood_sugar) > 95)
+                                        OR (MAX(time_of_day) = 3 AND MAX(blood_sugar) > 140)
+                                    )
+                                ) THEN 'HIGHเกินเกณฑ์'
+                                WHEN MAX(blood_sugar) < 60 THEN 'LOWต่ำกว่าเกณฑ์'
+                                ELSE 'NORMALปกติ'
+                            END AS status_lable
+                        ")
+                    )
+                    ->groupBy('datetime')
+                    ->get();
 
         
         // $bargraph = blood_sugar::where('user_id',$user_id)

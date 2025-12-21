@@ -606,12 +606,35 @@ class ApiController extends Controller
                                 ->get();   
     // dd($graphdata);
 
-    $blood_sugar =  blood_sugar::orderBy('datetime', 'DESC')->where('user_id',$user_id)->whereNull('deleted_at')->select("datetime", \DB::raw('(CASE 
-    WHEN (( blood_sugar.time_of_day = 4 AND blood_sugar.blood_sugar >120) OR (( blood_sugar.time_of_day  = 1 AND blood_sugar.blood_sugar>95) OR (blood_sugar.time_of_day = 3 and blood_sugar.blood_sugar>140 ))) THEN "HIGHเกินเกณฑ์" 
-    WHEN blood_sugar.blood_sugar < 60 THEN "LOWต่ำกว่าเกณฑ์" 
-    ELSE "NORMALปกติ" 
-    END) AS status_lable'))->groupBy('datetime')
-                           ->get();
+    // $blood_sugar =  blood_sugar::orderBy('datetime', 'DESC')->where('user_id',$user_id)->whereNull('deleted_at')->select("datetime", \DB::raw('(CASE 
+    // WHEN (( blood_sugar.time_of_day = 4 AND blood_sugar.blood_sugar >120) OR (( blood_sugar.time_of_day  = 1 AND blood_sugar.blood_sugar>95) OR (blood_sugar.time_of_day = 3 and blood_sugar.blood_sugar>140 ))) THEN "HIGHเกินเกณฑ์" 
+    // WHEN blood_sugar.blood_sugar < 60 THEN "LOWต่ำกว่าเกณฑ์" 
+    // ELSE "NORMALปกติ" 
+    // END) AS status_lable'))->groupBy('datetime')
+    //                        ->get();
+    $blood_sugar = blood_sugar::where('user_id', $user_id)
+                    ->whereNull('deleted_at')
+                    ->select(
+                        'datetime',
+                        \DB::raw('MAX(meal) as meal'),
+                        \DB::raw('MAX(time_of_day) as time_of_day'),
+                        \DB::raw('MAX(blood_sugar) as blood_sugar'),
+                        \DB::raw("
+                            CASE
+                                WHEN (
+                                    (MAX(meal) = 4 AND MAX(blood_sugar) > 120)
+                                    OR (
+                                        (MAX(time_of_day) = 1 AND MAX(blood_sugar) > 95)
+                                        OR (MAX(time_of_day) = 3 AND MAX(blood_sugar) > 140)
+                                    )
+                                ) THEN 'HIGHเกินเกณฑ์'
+                                WHEN MAX(blood_sugar) < 60 THEN 'LOWต่ำกว่าเกณฑ์'
+                                ELSE 'NORMALปกติ'
+                            END AS status_lable
+                        ")
+                    )
+                    ->groupBy('datetime')
+                    ->get();
                            
     $fetal_movement = fetal_movement::where('user_id',  $user_id)
                       // ->where('date', $today)

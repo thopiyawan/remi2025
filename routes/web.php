@@ -220,3 +220,4 @@ Route::get('edit', function () {
 
 
 Route::get('testa/{id}', [SqlController::class, 'test_sql']);
+Route::get('test_dialog', [GetMessageController::class, 'test_dialog']);

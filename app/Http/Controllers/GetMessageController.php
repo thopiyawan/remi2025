@@ -4389,5 +4389,17 @@ if(!is_null($events)){
          return $fulfilmentText;
        
     }
+
+    public function test_dialog(){
+          $Message = "ดื่มชาเขียวได้ไหม";
+          $text =  json_encode($Message, JSON_UNESCAPED_UNICODE );
+          $text1 = str_replace('"', "", $text);
+          $projectId = 'remiai-29f47';
+          $sessionId = '2f77c150-fc27-fc5b-b1c9-828de82d2d82';
+          $languageCode = 'th';
+          $userMessage =  $this->detect_intent_texts($projectId, $text1, $sessionId,$languageCode);
+          return $userMessage;
+    }
+
    
 }

@@ -168,23 +168,25 @@ class diaryController extends Controller
         // return View::make('personal_doctor_confirm')->with('record',$doctor);
          parse_str($request->getQueryString(), $query);
 
-            if (!isset($query['liff.state'])) {
-                abort(400, 'missing liff.state');
-            }
+              // 🔑 Laravel จะเปลี่ยน liff.state -> liff_state
+    $stateRaw = $request->query('liff_state');
 
-            // 2. decode liff.state
-            $state = urldecode($query['liff.state']);
-            // ได้: ?user_id=https://health-track.in.th/personal_doctor/tu1234
+    if (!$stateRaw) {
+        abort(400, 'missing liff.state');
+    }
 
-            // 3. แปลง state เป็น array
-            parse_str(ltrim($state, '?'), $stateParams);
+    // decode
+    $state = urldecode($stateRaw);
+    // ?user_id=https://health-track.in.th/personal_doctor/tu1234
 
-            if (!isset($stateParams['user_id'])) {
-                abort(400, 'missing user_id');
-            }
+    parse_str(ltrim($state, '?'), $stateParams);
 
-            // 4. ดึง tu1234 ออกมาจาก URL
-            $userId = basename($stateParams['user_id']);
+    if (!isset($stateParams['user_id'])) {
+        abort(400, 'missing user_id');
+    }
+
+    // ดึง tu1234
+    $userId = basename($stateParams['user_id']);
             dd($userId);
             //return View::make('personal_doctor_confirm')->with('record',$doctor);
     }

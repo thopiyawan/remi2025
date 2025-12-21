@@ -800,12 +800,33 @@ $dessert_din = tracker::join('tracker_activity','tracker.id','=','tracker_activi
   }
   
   public function summary_bloodsuger($user_id) {
-    $graphbar =  blood_sugar::orderBy('datetime', 'DESC')->where('user_id',$user_id)->whereNull('deleted_at')->select("datetime", "meal","time_of_day",\DB::raw('(CASE 
-    WHEN (( blood_sugar.time_of_day = 4 AND blood_sugar.blood_sugar >120) OR (( blood_sugar.time_of_day  = 1 AND blood_sugar.blood_sugar>95) OR (blood_sugar.time_of_day = 3 and blood_sugar.blood_sugar>140 ))) THEN "high" 
-    WHEN blood_sugar.blood_sugar < 60 THEN "low" 
-    ELSE "normal" 
-    END) AS status'))->groupBy('datetime')
-                     ->get();
+    // $graphbar =  blood_sugar::orderBy('datetime', 'DESC')->where('user_id',$user_id)->whereNull('deleted_at')->select("datetime", "meal","time_of_day",\DB::raw('(CASE 
+    // WHEN (( blood_sugar.time_of_day = 4 AND blood_sugar.blood_sugar >120) OR (( blood_sugar.time_of_day  = 1 AND blood_sugar.blood_sugar>95) OR (blood_sugar.time_of_day = 3 and blood_sugar.blood_sugar>140 ))) THEN "high" 
+    // WHEN blood_sugar.blood_sugar < 60 THEN "low" 
+    // ELSE "normal" 
+    // END) AS status'))->groupBy('datetime')
+    //                  ->get();
+
+    $graphbar = blood_sugar::where('user_id', $user_id)
+    ->whereNull('deleted_at')
+    ->select(
+        'datetime',
+        'meal',
+        'time_of_day',
+        DB::raw('(CASE 
+            WHEN (
+                (time_of_day = 4 AND blood_sugar > 120)
+                OR (time_of_day = 1 AND blood_sugar > 95)
+                OR (time_of_day = 3 AND blood_sugar > 140)
+            ) THEN "high"
+            WHEN blood_sugar < 60 THEN "low"
+            ELSE "normal"
+        END) AS status')
+    )
+    ->groupBy('datetime', 'meal', 'time_of_day', 'blood_sugar')
+    ->orderBy('datetime', 'DESC')
+    ->get();
+
 
 	  // $graphdata = (new SqlController)->blood_sugar_select($user_id);
     $a = $graphbar->transform(function ($graphbar) {

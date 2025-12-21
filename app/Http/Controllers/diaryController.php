@@ -158,13 +158,35 @@ class diaryController extends Controller
     }
      public function personal_doctor_confirm(Request $request)
     {
-        $url= $request->getRequestUri();
-        $parsedUrl = parse_url($url);
-        $parsedUrl = $parsedUrl['query'];
-        $id = str_replace('liff.state=%3Fkey%3D','', $parsedUrl);
-        $id = str_replace('key=','', $parsedUrl);
-        $doctor =  doctor::where('doctor_id',$id)->first();
-        return View::make('personal_doctor_confirm')->with('record',$doctor);
+        // $url= $request->getRequestUri();
+        // $parsedUrl = parse_url($url);
+        // $parsedUrl = $parsedUrl['query'];
+        // $id = str_replace('liff.state=%3Fkey%3D','', $parsedUrl);
+        // $id = str_replace('key=','', $parsedUrl);
+        // dd();
+        // $doctor =  doctor::where('doctor_id',$id)->first();
+        // return View::make('personal_doctor_confirm')->with('record',$doctor);
+         parse_str($request->getQueryString(), $query);
+
+            if (!isset($query['liff.state'])) {
+                abort(400, 'missing liff.state');
+            }
+
+            // 2. decode liff.state
+            $state = urldecode($query['liff.state']);
+            // ได้: ?user_id=https://health-track.in.th/personal_doctor/tu1234
+
+            // 3. แปลง state เป็น array
+            parse_str(ltrim($state, '?'), $stateParams);
+
+            if (!isset($stateParams['user_id'])) {
+                abort(400, 'missing user_id');
+            }
+
+            // 4. ดึง tu1234 ออกมาจาก URL
+            $userId = basename($stateParams['user_id']);
+            dd($userId);
+            //return View::make('personal_doctor_confirm')->with('record',$doctor);
     }
        public function p_doctor(Request $request)
     {

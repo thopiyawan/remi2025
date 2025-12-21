@@ -4355,8 +4355,7 @@ if(!is_null($events)){
         // new session
         $test = array('credentials' => 'client-secret.json');
 
-
-        $sessionsClient = new SessionsClient($test);
+        $sessionsClient = new \Google\Cloud\Dialogflow\V2\SessionsClient($test);
         $session = $sessionsClient->sessionName($projectId, $sessionId ?: uniqid());
         // printf('Session path: %s' . PHP_EOL, $session);
      

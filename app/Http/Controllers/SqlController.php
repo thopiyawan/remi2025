@@ -848,6 +848,7 @@ class SqlController extends Controller
     }
 
     public function test_sql($user){
+        
          $num = RecordOfPregnancy::where('user_id', $user)
                                       ->whereNull('deleted_at')
                                       ->count();

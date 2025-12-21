@@ -960,11 +960,11 @@ class diaryController extends Controller
       public function generateQRCode( $id )
     {
         // สร้าง URL ให้ผู้ป่วยใช้เชื่อมโยง
-    //    $liffBase = "https://liff.line.me/2007201003-Wwxkbv3B"; // เปลี่ยนเป็น LIFF ของคุณ
-       // $liffUrl = $liffBase . "?user_id=" . $id;
+       $liffBase = "https://liff.line.me/1656991660-K8bDpjZ9"; // เปลี่ยนเป็น LIFF ของคุณ
+       $liffUrl = $liffBase . "?user_id=" . $id;
       
         // สร้าง QR Code เป็น base64 image
-        $qrBinary = QrCode::format('png')->size(300)->generate($id);
+        $qrBinary = QrCode::format('png')->size(300)->generate($liffUrl);
         $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
         return   $qrBase64;
     }

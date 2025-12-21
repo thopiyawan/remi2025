@@ -985,13 +985,26 @@ class diaryController extends Controller
       public function generateQRCode( $id )
     {
         // สร้าง URL ให้ผู้ป่วยใช้เชื่อมโยง
-       $liffBase = "https://liff.line.me/1656991660-K8bDpjZ9"; // เปลี่ยนเป็น LIFF ของคุณ
-       $liffUrl = $liffBase . "?user_id=" . $id;
+    //    $liffBase = "https://liff.line.me/1656991660-K8bDpjZ9"; // เปลี่ยนเป็น LIFF ของคุณ
+    //    $liffUrl = $liffBase . "?user_id=" . $id;
       
-        // สร้าง QR Code เป็น base64 image
+    //     // สร้าง QR Code เป็น base64 image
+    //     $qrBinary = QrCode::format('png')->size(300)->generate($liffUrl);
+    //     $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
+    //     return   $qrBase64;
+        $liffBase = "https://liff.line.me/1656991660-K8bDpjZ9";
+
+        // ใส่ค่าผ่าน liff.state
+        $state = http_build_query([
+            'user_id' => $id
+        ]);
+
+        $liffUrl = $liffBase . '?liff.state=' . urlencode('?' . $state);
+
+        // สร้าง QR Code
         $qrBinary = QrCode::format('png')->size(300)->generate($liffUrl);
-        $qrBase64 = 'data:image/png;base64,' . base64_encode($qrBinary);
-        return   $qrBase64;
+
+        return 'data:image/png;base64,' . base64_encode($qrBinary);
     }
     // public function savediary_vitexc(Request $request)
     // {

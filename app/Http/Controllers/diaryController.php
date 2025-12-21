@@ -188,7 +188,7 @@ class diaryController extends Controller
         // ดึง tu1234
         $userId = basename($stateParams['user_id']);
         $doctor =  doctor::where('doctor_id',$userId)->first();
-
+        dd($doctor);
         return View::make('personal_doctor_confirm')->with('record',$doctor);
     }
        public function p_doctor(Request $request)

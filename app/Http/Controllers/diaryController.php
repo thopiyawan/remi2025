@@ -168,27 +168,28 @@ class diaryController extends Controller
         // return View::make('personal_doctor_confirm')->with('record',$doctor);
          parse_str($request->getQueryString(), $query);
 
-              // 🔑 Laravel จะเปลี่ยน liff.state -> liff_state
-    $stateRaw = $request->query('liff_state');
+        // 🔑 Laravel จะเปลี่ยน liff.state -> liff_state
+        $stateRaw = $request->query('liff_state');
 
-    if (!$stateRaw) {
-        abort(400, 'missing liff.state');
-    }
+        if (!$stateRaw) {
+            abort(400, 'missing liff.state');
+        }
 
-    // decode
-    $state = urldecode($stateRaw);
-    // ?user_id=https://health-track.in.th/personal_doctor/tu1234
+        // decode
+        $state = urldecode($stateRaw);
+        // ?user_id=https://health-track.in.th/personal_doctor/tu1234
 
-    parse_str(ltrim($state, '?'), $stateParams);
+        parse_str(ltrim($state, '?'), $stateParams);
 
-    if (!isset($stateParams['user_id'])) {
-        abort(400, 'missing user_id');
-    }
+        if (!isset($stateParams['user_id'])) {
+            abort(400, 'missing user_id');
+        }
 
-    // ดึง tu1234
-    $userId = basename($stateParams['user_id']);
-            dd($userId);
-            //return View::make('personal_doctor_confirm')->with('record',$doctor);
+        // ดึง tu1234
+        $userId = basename($stateParams['user_id']);
+        $doctor =  doctor::where('doctor_id',$userId)->first();
+
+        return View::make('personal_doctor_confirm')->with('record',$doctor);
     }
        public function p_doctor(Request $request)
     {

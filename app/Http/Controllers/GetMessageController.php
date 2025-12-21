@@ -4355,15 +4355,11 @@ if(!is_null($events)){
         // new session
         $test = array('credentials' => 'client-secret.json');
 
-       // $sessionsClient = new SessionsClient($test);
-        //$session = $sessionsClient->sessionName($projectId, $sessionId ?: uniqid());
+
+        $sessionsClient = new SessionsClient($test);
+        $session = $sessionsClient->sessionName($projectId, $sessionId ?: uniqid());
         // printf('Session path: %s' . PHP_EOL, $session);
-        $sessionsClient = new SessionsClient([
-        'credentials' => storage_path('app/dialogflow/client-secret.json')
-        ]);
-
-        $session = $sessionsClient->sessionName($projectId, $sessionId);
-
+     
         // create text input
         $textInput = new TextInput();
         $textInput->setText($text);
@@ -4395,15 +4391,74 @@ if(!is_null($events)){
     }
 
     public function test_dialog(){
-          $Message = "ดื่มชาเขียวได้ไหม";
-          $text =  json_encode($Message, JSON_UNESCAPED_UNICODE );
-          $text1 = str_replace('"', "", $text);
-          $projectId = 'remiai-29f47';
-          $sessionId = '2f77c150-fc27-fc5b-b1c9-828de82d2d82';
-          $languageCode = 'th';
-          $userMessage =  $this->detect_intent_texts($projectId, $text1, $sessionId,$languageCode);
-          return $userMessage;
+        $text      = "ชาเขียวกินได้ไหม";
+        $sessionId = "U2dc636d2cd052e82c29f5284e00f69b9"; // 👈 sessionId
+
+        $result = $this->detectIntent($text, $sessionId);
+          return $result;
     }
+
+    private function getDialogflowAccessToken(): string
+{
+    $key = json_decode(
+        file_get_contents(config('dialogflow.key_file')),
+        true
+    );
+
+    $jwtHeader = base64_encode(json_encode([
+        'alg' => 'RS256',
+        'typ' => 'JWT'
+    ]));
+
+    $now = time();
+
+    $jwtClaim = base64_encode(json_encode([
+        'iss'   => $key['client_email'],
+        'scope' => 'https://www.googleapis.com/auth/cloud-platform',
+        'aud'   => $key['token_uri'],
+        'iat'   => $now,
+        'exp'   => $now + 3600,
+    ]));
+
+    openssl_sign(
+        "$jwtHeader.$jwtClaim",
+        $signature,
+        $key['private_key'],
+        'SHA256'
+    );
+
+    $jwt = "$jwtHeader.$jwtClaim." . base64_encode($signature);
+
+    $response = Http::asForm()->post($key['token_uri'], [
+        'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        'assertion'  => $jwt,
+    ]);
+
+    return $response->json('access_token');
+}
+
+private function detectIntent(string $text, string $sessionId)
+{
+
+     
+    $accessToken = $this->getDialogflowAccessToken();
+
+    $projectId = config('dialogflow.project_id');
+
+    $url = "https://dialogflow.googleapis.com/v2/projects/{$projectId}/agent/sessions/{$sessionId}:detectIntent";
+
+    $response = Http::withToken($accessToken)->post($url, [
+        'queryInput' => [
+            'text' => [
+                'text' => $text,
+                'languageCode' => 'th',
+            ],
+        ],
+    ]);
+
+    return $response->json();
+}
+
 
    
 }

@@ -4405,26 +4405,29 @@ if(!is_null($events)){
 {
     $keyPath = storage_path('app/dialogflow/dialogflow-key.json');
 
-    if (!file_exists($keyPath)) {
-        throw new \Exception('Dialogflow key file not found');
-    }
-
     $key = json_decode(file_get_contents($keyPath), true);
 
-    if (!$key) {
-        throw new \Exception('Invalid Dialogflow key JSON');
+    if (!$key || !isset($key['private_key'])) {
+        throw new \Exception('Invalid Dialogflow key file');
     }
+
+    $jwt = $this->createJwt($key);
 
     $response = Http::asForm()->post($key['token_uri'], [
         'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        'assertion'  => $this->createJwt($key),
+        'assertion'  => $jwt,
     ]);
 
+    // 🔥 สำคัญ: ดู error จริงจาก Google
     if (!$response->ok()) {
-        \Log::error('Dialogflow token error', $response->json());
-        throw new \Exception('Failed to get access token');
+        \Log::error('Dialogflow token error', [
+            'status' => $response->status(),
+            'body'   => $response->body(),
+        ]);
+
+        // ชั่วคราว debug
+        dd($response->status(), $response->body());
     }
-JWT::encode($payload, $privateKey, 'RS256');
 
     $token = $response->json('access_token');
 
@@ -4432,7 +4435,7 @@ JWT::encode($payload, $privateKey, 'RS256');
         throw new \Exception('Access token is null');
     }
 
-    return $token; // ✅ สำคัญมาก
+    return $token;
 }
 
 private function createJwt(array $key): string
@@ -4442,12 +4445,12 @@ private function createJwt(array $key): string
     $payload = [
         'iss'   => $key['client_email'],
         'scope' => 'https://www.googleapis.com/auth/dialogflow',
-        'aud'   => $key['token_uri'],
+        'aud'   => $key['token_uri'], // ต้องเป็น oauth2.googleapis.com/token
         'iat'   => $now,
         'exp'   => $now + 3600,
     ];
 
-      return JWT::encode(
+    return JWT::encode(
         $payload,
         $key['private_key'],
         'RS256'

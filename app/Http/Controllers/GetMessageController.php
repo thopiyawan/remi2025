@@ -4424,6 +4424,7 @@ if(!is_null($events)){
         \Log::error('Dialogflow token error', $response->json());
         throw new \Exception('Failed to get access token');
     }
+JWT::encode($payload, $privateKey, 'RS256');
 
     $token = $response->json('access_token');
 
@@ -4446,11 +4447,7 @@ private function createJwt(array $key): string
         'exp'   => $now + 3600,
     ];
 
-    return \Firebase\JWT\JWT::encode(
-        $payload,
-        $key['private_key'],
-        'RS256'
-    );
+    return JWT::encode($payload, $privateKey, 'RS256');
 }
 
 private function detectIntent(string $text, string $sessionId)

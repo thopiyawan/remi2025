@@ -4450,7 +4450,7 @@ private function createJwt(array $key): string
         'exp'   => $now + 3600,
     ];
 
-    return JWT::encode(
+        return \Firebase\JWT\JWT::encode(
         $payload,
         $key['private_key'],
         'RS256'

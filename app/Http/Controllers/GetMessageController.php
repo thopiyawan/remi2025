@@ -25,6 +25,7 @@ use App\Http\Controllers\SqlController;
 use App\Http\Controllers\CalController;
 use App\Http\Controllers\ReplyMessageController;
 
+
 use Storage;
 
 use Image; 
@@ -35,7 +36,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
-
+use Firebase\JWT\JWT;
 
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient;
@@ -4431,6 +4432,25 @@ if(!is_null($events)){
     }
 
     return $token; // ✅ สำคัญมาก
+}
+
+private function createJwt(array $key): string
+{
+    $now = time();
+
+    $payload = [
+        'iss'   => $key['client_email'],
+        'scope' => 'https://www.googleapis.com/auth/dialogflow',
+        'aud'   => $key['token_uri'],
+        'iat'   => $now,
+        'exp'   => $now + 3600,
+    ];
+
+    return \Firebase\JWT\JWT::encode(
+        $payload,
+        $key['private_key'],
+        'RS256'
+    );
 }
 
 private function detectIntent(string $text, string $sessionId)

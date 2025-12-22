@@ -4447,7 +4447,11 @@ private function createJwt(array $key): string
         'exp'   => $now + 3600,
     ];
 
-    return JWT::encode($payload, $privateKey, 'RS256');
+      return JWT::encode(
+        $payload,
+        $key['private_key'],
+        'RS256'
+    );
 }
 
 private function detectIntent(string $text, string $sessionId)

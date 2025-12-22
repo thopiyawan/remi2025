@@ -4402,41 +4402,35 @@ if(!is_null($events)){
 
     private function getDialogflowAccessToken(): string
 {
-    $key = json_decode(
-        file_get_contents(config('dialogflow.key_file')),
-        true
-    );
+    $keyPath = storage_path('app/dialogflow/dialogflow-key.json');
 
-    $jwtHeader = base64_encode(json_encode([
-        'alg' => 'RS256',
-        'typ' => 'JWT'
-    ]));
+    if (!file_exists($keyPath)) {
+        throw new \Exception('Dialogflow key file not found');
+    }
 
-    $now = time();
+    $key = json_decode(file_get_contents($keyPath), true);
 
-    $jwtClaim = base64_encode(json_encode([
-        'iss'   => $key['client_email'],
-        'scope' => 'https://www.googleapis.com/auth/cloud-platform',
-        'aud'   => $key['token_uri'],
-        'iat'   => $now,
-        'exp'   => $now + 3600,
-    ]));
-
-    openssl_sign(
-        "$jwtHeader.$jwtClaim",
-        $signature,
-        $key['private_key'],
-        'SHA256'
-    );
-
-    $jwt = "$jwtHeader.$jwtClaim." . base64_encode($signature);
+    if (!$key) {
+        throw new \Exception('Invalid Dialogflow key JSON');
+    }
 
     $response = Http::asForm()->post($key['token_uri'], [
         'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        'assertion'  => $jwt,
+        'assertion'  => $this->createJwt($key),
     ]);
 
-    return $response->json('access_token');
+    if (!$response->ok()) {
+        \Log::error('Dialogflow token error', $response->json());
+        throw new \Exception('Failed to get access token');
+    }
+
+    $token = $response->json('access_token');
+
+    if (!$token) {
+        throw new \Exception('Access token is null');
+    }
+
+    return $token; // ✅ สำคัญมาก
 }
 
 private function detectIntent(string $text, string $sessionId)

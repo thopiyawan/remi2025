@@ -145,6 +145,26 @@ class GetMessageController extends Controller {
                   $this->checkmessage($replyToken, $text, $userId, $bot);
                   continue;
            
+              }elseif($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\ImageMessage){
+                  $replyToken = $eventObj->getReplyToken();
+                  $messageId  = $eventObj->getMessageId();
+                  $userId     = $eventObj->getUserId();
+
+                  // 1. ดึงไฟล์ภาพ Binary จาก LINE
+                  $response = $bot->getMessageContent($messageId);
+                  
+                  if ($response->isSucceeded()) {
+                      $imageBinary = $response->getRawBody();
+
+                      // 2. ส่งไปวิเคราะห์ที่ Gemini (ฟังก์ชันที่เราจะสร้างเพิ่ม)
+                      $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+
+                      // 3. ตอบกลับผู้ใช้
+                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                      $bot->replyMessage($replyToken, $textMessageBuilder);
+                  }
+                  continue;
+
               }
               // ➕ กรณีปลดบล็อค / add friend
               if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
@@ -4479,6 +4499,52 @@ private function detectIntent(string $text, string $sessionId)
     return $response->json();
 }
 
+private function analyzeImageWithGemini($imageBinary)
+{
+    try {
+        // เตรียมรูปภาพในรูปแบบ Blob
+        $imageBlob = new \Gemini\Data\Blob(
+            mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
+            data: base64_encode($imageBinary)
+        );
 
+        // เรียกใช้ Gemini 1.5 Flash
+        $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
+            ->generateContent([
+                'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
+                $imageBlob
+            ]);
+
+        return $result->text();
+    } catch (\Exception $e) {
+        // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
+        \Log::error('Gemini Error: ' . $e->getMessage());
+        return "ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้";
+    }
+}
+
+private function analyzeImageWithGemini($imageBinary)
+{
+    try {
+        // เตรียมรูปภาพในรูปแบบ Blob
+        $imageBlob = new \Gemini\Data\Blob(
+            mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
+            data: base64_encode($imageBinary)
+        );
+
+        // เรียกใช้ Gemini 1.5 Flash
+        $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
+            ->generateContent([
+                'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
+                $imageBlob
+            ]);
+
+        return $result->text();
+    } catch (\Exception $e) {
+        // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
+        \Log::error('Gemini Error: ' . $e->getMessage());
+        return "ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้";
+    }
+}
    
 }

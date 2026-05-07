@@ -4513,9 +4513,9 @@ private function analyzeImageWithGemini($imageBinary)
             data: $imageBinary
         );
 
-      $result = \Gemini\Laravel\Facades\Gemini::geminiProVision() // หรือใช้ geminiPro() สำหรับรุ่นเก่า
+   $result = \Gemini\Laravel\Facades\Gemini::model('gemini-1.5-flash')
     ->generateContent([
-        'วิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, แคลอรี่ และสารอาหารหลัก',
+        'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
         $imageBlob
     ]);
         return $result->text();

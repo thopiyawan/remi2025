@@ -4526,12 +4526,12 @@ private function analyzeImageWithGemini($imageBinary)
 
         return $result->text();
 
-    } catch (\Exception $e) {
+    catch (\Exception $e) {
 
-        \Log::error('Gemini Error: ' . $e->getMessage());
+    \Log::error($e);
 
-        return 'ระบบวิเคราะห์ภาพขัดข้อง';
-    }
+    return $e->getMessage();
+}
 }
 
    

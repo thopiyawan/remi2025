@@ -4526,12 +4526,10 @@ private function analyzeImageWithGemini($imageBinary)
 
         return $result->text();
 
-    catch (\Exception $e) {
-
-    \Log::error($e);
-
-    return $e->getMessage();
-}
+    } catch (\Exception $e) {
+        \Log::error('Gemini Error: ' . $e->getMessage());
+        return "AI Error: " . $e->getMessage(); 
+    }
 }
 
    

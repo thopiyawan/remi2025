@@ -156,12 +156,17 @@ class GetMessageController extends Controller {
                   if ($response->isSucceeded()) {
                       $imageBinary = $response->getRawBody();
 
+                       // บันทึกลง Log เพื่อเช็คว่าได้ไฟล์มาจริงไหม (ขนาดไฟล์ต้อง > 0)
+                      \Log::info("Image size: " . strlen($imageBinary)); 
+
                       // 2. ส่งไปวิเคราะห์ที่ Gemini (ฟังก์ชันที่เราจะสร้างเพิ่ม)
                       $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
                       // 3. ตอบกลับผู้ใช้
                       $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('2222');
                       $bot->replyMessage($replyToken, $textMessageBuilder);
+
+                      $response = $bot->getMessageContent($messageId);
                   }
                   continue;
 

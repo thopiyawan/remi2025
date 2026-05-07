@@ -160,7 +160,7 @@ class GetMessageController extends Controller {
                       $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
                       // 3. ตอบกลับผู้ใช้
-                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('2222');
                       $bot->replyMessage($replyToken, $textMessageBuilder);
                   }
                   continue;

@@ -4517,13 +4517,11 @@ private function analyzeImageWithGemini($imageBinary)
             data: $imageBinary
         );
 
-        $result = \Gemini\Laravel\Facades\Gemini::generativeModel(
-            model: 'gemini-1.5-flash'
-        )->generateContent([
-            'ช่วยวิเคราะห์ภาพอาหารนี้ บอกชื่ออาหาร ประมาณแคลอรี่ และสารอาหารหลัก',
-            $imageBlob
-        ]);
-
+     $result = \Gemini\Laravel\Facades\Gemini::model('gemini-1.5-flash')
+    ->generateContent([
+        'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
+        $imageBlob
+    ]);
         return $result->text();
 
     } catch (\Exception $e) {

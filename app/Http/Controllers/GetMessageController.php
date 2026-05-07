@@ -4519,32 +4519,9 @@ private function analyzeImageWithGemini($imageBinary)
     } catch (\Exception $e) {
         // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
         \Log::error('Gemini Error: ' . $e->getMessage());
-        return "ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้";
+        return 'ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้';
     }
 }
 
-private function analyzeImageWithGemini($imageBinary)
-{
-    try {
-        // เตรียมรูปภาพในรูปแบบ Blob
-        $imageBlob = new \Gemini\Data\Blob(
-            mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
-            data: base64_encode($imageBinary)
-        );
-
-        // เรียกใช้ Gemini 1.5 Flash
-        $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
-            ->generateContent([
-                'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
-                $imageBlob
-            ]);
-
-        return $result->text();
-    } catch (\Exception $e) {
-        // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
-        \Log::error('Gemini Error: ' . $e->getMessage());
-        return "ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้";
-    }
-}
    
 }

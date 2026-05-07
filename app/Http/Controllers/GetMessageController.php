@@ -4502,25 +4502,25 @@ private function detectIntent(string $text, string $sessionId)
 private function analyzeImageWithGemini($imageBinary)
 {
     try {
-        // เตรียมรูปภาพในรูปแบบ Blob
+
         $imageBlob = new \Gemini\Data\Blob(
             mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
-            data: base64_encode($imageBinary)
+            data: $imageBinary
         );
 
-        // เรียกใช้ Gemini 1.5 Flash
         $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
             ->generateContent([
-                'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
+                'ตอบภาษาไทย วิเคราะห์ภาพอาหารนี้',
                 $imageBlob
             ]);
 
-        return $result->text();
+        return mb_convert_encoding($result->text(), 'UTF-8', 'UTF-8');
+
     } catch (\Exception $e) {
-        // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
+
         \Log::error('Gemini Error: ' . $e->getMessage());
-        $text = mb_convert_encoding('ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้', 'UTF-8', 'UTF-8');
-        return $text;
+
+        return 'ระบบวิเคราะห์ภาพขัดข้อง';
     }
 }
 

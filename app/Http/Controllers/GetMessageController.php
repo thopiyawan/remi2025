@@ -4519,7 +4519,8 @@ private function analyzeImageWithGemini($imageBinary)
     } catch (\Exception $e) {
         // กรณีเกิดข้อผิดพลาด เช่น API Key ผิด หรือ Token เต็ม
         \Log::error('Gemini Error: ' . $e->getMessage());
-        return 'ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้';
+        $text = mb_convert_encoding('ขออภัยครับ ระบบไม่สามารถวิเคราะห์ภาพได้ในขณะนี้', 'UTF-8', 'UTF-8');
+        return $text;
     }
 }
 

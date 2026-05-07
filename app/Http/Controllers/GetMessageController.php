@@ -4513,13 +4513,14 @@ private function analyzeImageWithGemini($imageBinary)
             data: $imageBinary
         );
 
-        $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
-            ->generateContent([
-                'ตอบภาษาไทย วิเคราะห์ภาพอาหารนี้',
-                $imageBlob
-            ]);
+        $result = \Gemini\Laravel\Facades\Gemini::generativeModel(
+            model: 'gemini-1.5-flash'
+        )->generateContent([
+            'ช่วยวิเคราะห์ภาพอาหารนี้ บอกชื่ออาหาร แคลอรี่ และสารอาหารหลัก',
+            $imageBlob
+        ]);
 
-        return mb_convert_encoding($result->text(), 'UTF-8', 'UTF-8');
+        return $result->text();
 
     } catch (\Exception $e) {
 

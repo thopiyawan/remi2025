@@ -4569,9 +4569,9 @@ private function analyzeImageWithGemini($imageBinary)
     ];
 
         // 4. ส่ง Request ด้วย Bearer Token
-      $response = Http::withToken($accessToken)
-            ->timeout(60) // แนะนำให้เพิ่ม Timeout เป็น 60 วินาทีสำหรับงานวิเคราะห์ภาพ
-            ->post($url, $payload);
+      $response = Http::withToken($token)->post($url, $payload);
+
+    
 
     if ($response->successful()) {
     $data = $response->json();

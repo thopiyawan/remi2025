@@ -4556,10 +4556,6 @@ private function analyzeImageWithGemini($imageBinary)
                 // }
                 {
                   "food_detected": [],
-                  "estimated_calories": 0,
-                  "carbohydrate_g": 0,
-                  "protein_g": 0,
-                  "fat_g": 0
                 }
                 ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
             ]
@@ -4606,12 +4602,12 @@ private function analyzeImageWithGemini($imageBinary)
 private function formatLineResponse($data)
 {
     $msg = "🔍 ผลการวิเคราะห์: " . implode(', ', $data['food_detected']) . "\n";
-    $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
-    $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
+    // $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
+    // $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
     
-    $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
+    // $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
     
-    $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
+    // $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
 
     return $msg;
 }

@@ -4565,15 +4565,24 @@ private function analyzeImageWithGemini($imageBinary)
         // 4. ส่ง Request ด้วย Bearer Token
       $response = Http::withToken($accessToken)->post($url, $payload);
 
-      if ($response->successful()) {
-          $resultText = $response->json()[0]['candidates'][0]['content']['parts'][0]['text'];
-          
-          // แปลง String JSON เป็น PHP Array
-          $foodData = json_decode($resultText, true);
+    if ($response->successful()) {
+    $data = $response->json();
 
-          // นำไปใช้งานต่อ เช่น สร้างข้อความตอบกลับ LINE
-          return $this->formatLineResponse($foodData);
-      }
+    // ตรวจสอบว่ามีโครงสร้างที่ต้องการจริงไหมก่อนดึงค่า
+    if (isset($data[0]['candidates'][0]['content']['parts'][0]['text'])) {
+        $resultText = $data[0]['candidates'][0]['content']['parts'][0]['text'];
+        
+        // พยายาม Parse JSON ที่ Gemini ตอบกลับมา
+        $foodData = json_decode($resultText, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $this->formatLineResponse($foodData);
+        } else {
+            \Log::error("Gemini JSON Parse Error: " . $resultText);
+            return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
+        }
+    }
+}
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
 
     } catch (\Exception $e) {

@@ -4543,18 +4543,15 @@ private function analyzeImageWithGemini($imageBinary)
         'systemInstruction' => [
             'parts' => [
                 ['text' => 'ช่วยวิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น เป็นภาษาไทย โดยมีโครงสร้างดังนี้:
-                // {
-                //     "food_detected": [],
-                //     "portion_estimation": {},
-                //     "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
-                //     "total_carb_estimate": "",
-                //     "glycemic_load": {"level": "", "reason": ""},
-                //     "blood_sugar_risk_factors": [],
-                //     "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
-                //     "confidence": float
-                // }
                 {
-                  "food_detected": [],
+                    "food_detected": [],
+                    "portion_estimation": {},
+                    "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
+                    "total_carb_estimate": "",
+                    "glycemic_load": {"level": "", "reason": ""},
+                    "blood_sugar_risk_factors": [],
+                    "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
+                    "confidence": float
                 }
                 ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
             ]
@@ -4601,12 +4598,12 @@ private function analyzeImageWithGemini($imageBinary)
 private function formatLineResponse($data)
 {
     $msg = "🔍 ผลการวิเคราะห์: " . implode(', ', $data['food_detected']) . "\n";
-    // $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
-    // $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
+    $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
+    $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
     
-    // $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
+    $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
     
-    // $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
+    $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
 
     return $msg;
 }

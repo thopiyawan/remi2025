@@ -4523,8 +4523,7 @@ private function analyzeImageWithGemini($imageBinary)
         $accessToken = $credentials->fetchAuthToken()['access_token'];
 
         // 2. เตรียม URL สำหรับ Vertex AI
-        $url = "https://{$location}-aiplatform.googleapis.com/v1/projects/{$projectId}/locations/{$location}/publishers/google/models/{$modelId}:streamGenerateContent";
-
+        $url = "https://{$location}-aiplatform.googleapis.com/v1/projects/{$projectId}/locations/{$location}/publishers/google/models/{$modelId}:generateContent";
         // 3. เตรียม Payload ตามโครงสร้าง Vertex AI API
         $payload = [
         'contents' => [

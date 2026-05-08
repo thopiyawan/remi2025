@@ -37,7 +37,7 @@ return [
 
     'google_cloud' => [
         'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),
-        'auth_json'  => storage_path('app/google-cloud-auth.json'), // ระบุ Path ตรงนี้
+        'auth_json'  => storage_path('app/google-auth.json'), // ระบุ Path ตรงนี้
     ],
 
 ];

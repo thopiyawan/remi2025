@@ -4513,7 +4513,7 @@ private function analyzeImageWithGemini($imageBinary)
     try {
         $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
         $location = 'us-central1'; 
-        $modelId = 'gemini-1.5-flash-002'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+        $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
 
         // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
         $credentials = new ServiceAccountCredentials(

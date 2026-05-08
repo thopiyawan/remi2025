@@ -4518,7 +4518,7 @@ private function analyzeImageWithGemini($imageBinary)
         // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
         $credentials = new ServiceAccountCredentials(
             'https://www.googleapis.com/auth/cloud-platform',
-            storage_path('app/google-cloud-auth.json')
+            storage_path('app/google-auth.json')
         );
         $accessToken = $credentials->fetchAuthToken()['access_token'];
 

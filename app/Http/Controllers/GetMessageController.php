@@ -4513,7 +4513,7 @@ private function analyzeImageWithGemini($imageBinary)
     try {
         $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
         $location = 'us-central1'; 
-        $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+        $modelId = 'gemini-1.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
 
         // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
         $credentials = new ServiceAccountCredentials(
@@ -4543,7 +4543,7 @@ private function analyzeImageWithGemini($imageBinary)
         ],
         'systemInstruction' => [
             'parts' => [
-                ['text' => 'คุณคือนักโภชนาการ วิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:
+                ['text' => 'ช่วยวิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:
                 {
                     "food_detected": [],
                     "portion_estimation": {},

@@ -74,10 +74,6 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 use LINE\LINEBot\Event\Parser\EventRequestParser;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 
-use Gemini\Laravel\Facades\Gemini;
-use Gemini\Data\Blob;
-use Gemini\Enums\MimeType;
-
 
 use Session;
 
@@ -153,27 +149,21 @@ class GetMessageController extends Controller {
                   $replyToken = $eventObj->getReplyToken();
                   $messageId  = $eventObj->getMessageId();
                   $userId     = $eventObj->getUserId();
-
-                  // 1. ดึงไฟล์ภาพ Binary จาก LINE
+              
+                  // 1. ?????????? Binary ??? LINE
                   $response = $bot->getMessageContent($messageId);
                   
                   if ($response->isSucceeded()) {
                       $imageBinary = $response->getRawBody();
-
-                       // บันทึกลง Log เพื่อเช็คว่าได้ไฟล์มาจริงไหม (ขนาดไฟล์ต้อง > 0)
-                      \Log::info("Image size: " . strlen($imageBinary)); 
-
-                      // 2. ส่งไปวิเคราะห์ที่ Gemini (ฟังก์ชันที่เราจะสร้างเพิ่ม)
+              
+                      // 2. ????????????????? Gemini (??????????????????????????)
                       $analysisResult = $this->analyzeImageWithGemini($imageBinary);
-
-                      // 3. ตอบกลับผู้ใช้
-                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('2222');
+              
+                      // 3. ?????????????
+                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                       $bot->replyMessage($replyToken, $textMessageBuilder);
-
-                      $response = $bot->getMessageContent($messageId);
                   }
                   continue;
-
               }
               // ➕ กรณีปลดบล็อค / add friend
               if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
@@ -4507,30 +4497,30 @@ private function detectIntent(string $text, string $sessionId)
 
     return $response->json();
 }
+
 private function analyzeImageWithGemini($imageBinary)
 {
     try {
-
-        $imageBlob = new Blob(
+        // ???????????????????? Blob
+        $imageBlob = new \Gemini\Data\Blob(
             mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
-            data: $imageBinary
+            data: base64_encode($imageBinary)
         );
 
-        $result = Gemini::generativeModel(model: 'gemini-2.0-flash')
-        ->generateContent([
-            'ช่วยวิเคราะห์ภาพอาหารนี้ บอกชื่ออาหาร ประมาณแคลอรี่ และสารอาหารหลัก',
-            $imageBlob
-        ]);
+        // ???????? Gemini 1.5 Flash
+        $result = \Gemini\Laravel\Facades\Gemini::gemini15Flash()
+            ->generateContent([
+                '????????????????????????: ????????????, ????????????? ???????????????????????????',
+                $imageBlob
+            ]);
 
-    
         return $result->text();
-
     } catch (\Exception $e) {
+        // ?????????????????? ???? API Key ??? ???? Token ????
         \Log::error('Gemini Error: ' . $e->getMessage());
-        return "AI Error: " . $e->getMessage(); 
+        return "?????????? ????????????????????????????????????";
     }
 }
-
 
    
 }

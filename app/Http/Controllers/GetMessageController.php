@@ -4557,13 +4557,18 @@ private function analyzeImageWithGemini($imageBinary)
                 ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
             ]
         ],
-        'generationConfig' => [
-            'response_mime_type' => 'application/json', // บังคับให้ส่งกลับเป็น JSON (ถ้าโมเดลรองรับ)
-        ]
+        // --- วางตรงนี้ครับ (ระดับเดียวกับ contents) ---
+            'generationConfig' => [
+                'temperature' => 0.2, 
+                'maxOutputTokens' => 4096, 
+                'response_mime_type' => 'application/json', 
+            ],
     ];
 
         // 4. ส่ง Request ด้วย Bearer Token
-      $response = Http::withToken($accessToken)->post($url, $payload);
+      $response = Http::withToken($accessToken)
+            ->timeout(60) // แนะนำให้เพิ่ม Timeout เป็น 60 วินาทีสำหรับงานวิเคราะห์ภาพ
+            ->post($url, $payload);
 
     if ($response->successful()) {
     $data = $response->json();

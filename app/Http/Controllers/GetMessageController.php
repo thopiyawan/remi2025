@@ -76,6 +76,7 @@ use LINE\LINEBot\Exception\InvalidSignatureException;
 use Gemini\Data\Blob;
 use Gemini\Enums\MimeType;
 use Gemini\Laravel\Facades\Gemini;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 
 
 use Session;
@@ -148,26 +149,32 @@ class GetMessageController extends Controller {
                   $this->checkmessage($replyToken, $text, $userId, $bot);
                   continue;
            
-              }elseif($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\ImageMessage){
-                  $replyToken = $eventObj->getReplyToken();
-                  $messageId  = $eventObj->getMessageId();
-                  $userId     = $eventObj->getUserId();
-              
-                  // 1. ?????????? Binary ??? LINE
-                  $response = $bot->getMessageContent($messageId);
-                  
-                  if ($response->isSucceeded()) {
-                      $imageBinary = $response->getRawBody();
-              
-                      // 2. ????????????????? Gemini (??????????????????????????)
-                      $analysisResult = $this->analyzeImageWithGemini($imageBinary);
-              
-                      // 3. ?????????????
-                      $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                      $bot->replyMessage($replyToken, $textMessageBuilder);
-                  }
-                  continue;
-              }
+              } elseif ($eventObj instanceof \LINE\LINEBot\Event\MessageEvent\ImageMessage) {
+                $replyToken = $eventObj->getReplyToken();
+                $messageId  = $eventObj->getMessageId();
+                $userId     = $eventObj->getUserId();
+
+                // 1. ตอบกลับทันทีว่าได้รับแล้ว (ป้องกันความสับสน)
+                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("ได้รับรูปภาพแล้วครับ กำลังคำนวณสารอาหารให้สักครู่... 🥗"));
+
+                // 2. ดึงรูปภาพ
+                $response = $bot->getMessageContent($messageId);
+                
+                if ($response->isSucceeded()) {
+                    $imageBinary = $response->getRawBody();
+                    
+                    // แนะนำ: ใช้ Dispatch Job ในระดับโปรเจกต์จริง
+                    // AnalyzeImageJob::dispatch($userId, $imageBinary);
+                    
+                    // แบบ Synchronous (สำหรับการทดสอบ)
+                    $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+
+                    // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
+                    $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                    $bot->pushMessage($userId, $textMessageBuilder);
+                }
+                continue;
+            }
               // ➕ กรณีปลดบล็อค / add friend
               if ($eventObj instanceof \LINE\LINEBot\Event\FollowEvent) {
 
@@ -4504,23 +4511,59 @@ private function detectIntent(string $text, string $sessionId)
 private function analyzeImageWithGemini($imageBinary)
 {
     try {
-        // ???????????????????? Blob
-        $imageBlob = new Blob(
-            mimeType: MimeType::IMAGE_JPEG,
-            data: base64_encode($imageBinary)
+        $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
+        $location = 'asia-southeast1'; 
+        $modelId = 'gemini-1.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+
+        // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
+        $credentials = new ServiceAccountCredentials(
+            'https://www.googleapis.com/auth/cloud-platform',
+            storage_path('app/google-cloud-auth.json')
         );
+        $accessToken = $credentials->fetchAuthToken()['access_token'];
 
-        // ???????? Gemini 1.5 Flash
-        $result = Gemini::generativeModel(model: 'gemini-2.0-flash')
-            ->generateContent([
-                'ภาพอะไร',
-                $imageBlob
-            ]);
+        // 2. เตรียม URL สำหรับ Vertex AI
+        $url = "https://{$location}-aiplatform.googleapis.com/v1/projects/{$projectId}/locations/{$location}/publishers/google/models/{$modelId}:streamGenerateContent";
 
-        return $result->text();
+        // 3. เตรียม Payload ตามโครงสร้าง Vertex AI API
+        $payload = [
+            'contents' => [
+                [
+                    'role' => 'user',
+                    'parts' => [
+                        ['text' => 'นี่คือภาพอาหารอะไร? โปรดวิเคราะห์ชื่อและปริมาณแคลอรี่'],
+                        [
+                            'inline_data' => [
+                                'mime_type' => 'image/jpeg',
+                                'data' => base64_encode($imageBinary)
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'systemInstruction' => [
+                'parts' => [
+                    ['text' => 'คุณคือนักโภชนาการ วิเคราะห์ภาพอาหารอย่างแม่นยำและตอบเป็นภาษาไทย']
+                ]
+            ]
+        ];
+
+        // 4. ส่ง Request ด้วย Bearer Token
+        $response = Http::withToken($accessToken)
+            ->timeout(30)
+            ->post($url, $payload);
+
+        if ($response->successful()) {
+            // Vertex AI แบบ Stream จะคืนค่ามาเป็น Array ของ JSON
+            $data = $response->json();
+            return $data[0]['candidates'][0]['content']['parts'][0]['text'] ?? "ไม่สามารถวิเคราะห์ภาพได้";
+        }
+
+        throw new \Exception('Vertex AI Response Error: ' . $response->body());
+
     } catch (\Exception $e) {
-        \Log::error('Gemini Error: ' . $e->getMessage());
-        return "ขัดข้อง";
+        \Log::error('Gemini Vertex Error: ' . $e->getMessage());
+        return "ขออภัย ระบบวิเคราะห์ภาพขัดข้อง";
     }
 }
 

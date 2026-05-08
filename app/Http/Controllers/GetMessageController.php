@@ -4527,44 +4527,72 @@ private function analyzeImageWithGemini($imageBinary)
 
         // 3. เตรียม Payload ตามโครงสร้าง Vertex AI API
         $payload = [
-            'contents' => [
-                [
-                    'role' => 'user',
-                    'parts' => [
-                        ['text' => 'นี่คือภาพอาหารอะไร? โปรดวิเคราะห์ชื่อและปริมาณแคลอรี่'],
-                        [
-                            'inline_data' => [
-                                'mime_type' => 'image/jpeg',
-                                'data' => base64_encode($imageBinary)
-                            ]
+        'contents' => [
+            [
+                'role' => 'user',
+                'parts' => [
+                    ['text' => 'วิเคราะห์ภาพอาหารนี้'],
+                    [
+                        'inline_data' => [
+                            'mime_type' => 'image/jpeg',
+                            'data' => base64_encode($imageBinary)
                         ]
                     ]
                 ]
-            ],
-            'systemInstruction' => [
-                'parts' => [
-                    ['text' => 'คุณคือนักโภชนาการ วิเคราะห์ภาพอาหารอย่างแม่นยำและตอบเป็นภาษาไทย']
-                ]
             ]
-        ];
+        ],
+        'systemInstruction' => [
+            'parts' => [
+                ['text' => 'คุณคือนักโภชนาการ วิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:
+                {
+                    "food_detected": [],
+                    "portion_estimation": {},
+                    "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
+                    "total_carb_estimate": "",
+                    "glycemic_load": {"level": "", "reason": ""},
+                    "blood_sugar_risk_factors": [],
+                    "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
+                    "confidence": float
+                }
+                ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
+            ]
+        ],
+        'generationConfig' => [
+            'response_mime_type' => 'application/json', // บังคับให้ส่งกลับเป็น JSON (ถ้าโมเดลรองรับ)
+        ]
+    ];
 
         // 4. ส่ง Request ด้วย Bearer Token
-        $response = Http::withToken($accessToken)
-            ->timeout(30)
-            ->post($url, $payload);
+      $response = Http::withToken($accessToken)->post($url, $payload);
 
-        if ($response->successful()) {
-            // Vertex AI แบบ Stream จะคืนค่ามาเป็น Array ของ JSON
-            $data = $response->json();
-            return $data[0]['candidates'][0]['content']['parts'][0]['text'] ?? "ไม่สามารถวิเคราะห์ภาพได้";
-        }
+      if ($response->successful()) {
+          $resultText = $response->json()[0]['candidates'][0]['content']['parts'][0]['text'];
+          
+          // แปลง String JSON เป็น PHP Array
+          $foodData = json_decode($resultText, true);
 
+          // นำไปใช้งานต่อ เช่น สร้างข้อความตอบกลับ LINE
+          return $this->formatLineResponse($foodData);
+      }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
 
     } catch (\Exception $e) {
         \Log::error('Gemini Vertex Error: ' . $e->getMessage());
         return "ขออภัย ระบบวิเคราะห์ภาพขัดข้อง";
     }
+}
+
+private function formatLineResponse($data)
+{
+    $msg = "🔍 ผลการวิเคราะห์: " . implode(', ', $data['food_detected']) . "\n";
+    $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
+    $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
+    
+    $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
+    
+    $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
+
+    return $msg;
 }
 
    

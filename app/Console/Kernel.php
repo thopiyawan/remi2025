@@ -29,7 +29,11 @@ class Kernel extends ConsoleKernel
         // $schedule->call('\App\Http\Controllers\noticeController@notice_breakfast')->timezone('Asia/Bangkok')->dailyAt('9:00');
         // $schedule->call('\App\Http\Controllers\noticeController@notice_lunch')->timezone('Asia/Bangkok')->dailyAt('13:00');
         //$schedule->call('\App\Http\Controllers\noticeController@notice_dinner')->timezone('Asia/Bangkok')->weeklyOn(0,'18:00');
-        $schedule->call('\App\Http\Controllers\noticeController@notice_monday')->timezone('Asia/Bangkok')->weeklyOn(0, '9:00');
+        //$schedule->call('\App\Http\Controllers\noticeController@notice_monday')->timezone('Asia/Bangkok')->weeklyOn(0, '9:00');
+        //$schedule->call('\App\Http\Controllers\noticeController@notice_monday')->everyMinute();
+         $schedule->call(function () {
+        \Log::info('SCHEDULE RUN OK');
+         })->everyMinute();
     }
 
     /**

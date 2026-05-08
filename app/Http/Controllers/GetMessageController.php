@@ -4543,16 +4543,23 @@ private function analyzeImageWithGemini($imageBinary)
         ],
         'systemInstruction' => [
             'parts' => [
-                ['text' => 'ช่วยวิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:
+                ['text' => 'ช่วยวิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น เป็นภาษาไทย โดยมีโครงสร้างดังนี้:
+                // {
+                //     "food_detected": [],
+                //     "portion_estimation": {},
+                //     "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
+                //     "total_carb_estimate": "",
+                //     "glycemic_load": {"level": "", "reason": ""},
+                //     "blood_sugar_risk_factors": [],
+                //     "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
+                //     "confidence": float
+                // }
                 {
-                    "food_detected": [],
-                    "portion_estimation": {},
-                    "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
-                    "total_carb_estimate": "",
-                    "glycemic_load": {"level": "", "reason": ""},
-                    "blood_sugar_risk_factors": [],
-                    "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
-                    "confidence": float
+                  "food_detected": [],
+                  "estimated_calories": 0,
+                  "carbohydrate_g": 0,
+                  "protein_g": 0,
+                  "fat_g": 0
                 }
                 ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
             ]

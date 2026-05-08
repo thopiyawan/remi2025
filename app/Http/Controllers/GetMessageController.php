@@ -4512,16 +4512,18 @@ private function analyzeImageWithGemini($imageBinary)
 {
     try {
 
-        $imageBlob = new \Gemini\Data\Blob(
+        $imageBlob = new Blob(
             mimeType: \Gemini\Enums\MimeType::IMAGE_JPEG,
             data: $imageBinary
         );
 
-     $result = \Gemini\Laravel\Facades\Gemini::model('gemini-1.5-flash')
-    ->generateContent([
-        'ช่วยวิเคราะห์ภาพอาหารนี้: บอกชื่ออาหาร, ประมาณแคลอรี่ และสารอาหารหลักให้หน่อยครับ',
-        $imageBlob
-    ]);
+        $result = Gemini::generativeModel(model: 'gemini-2.0-flash')
+        ->generateContent([
+            'ช่วยวิเคราะห์ภาพอาหารนี้ บอกชื่ออาหาร ประมาณแคลอรี่ และสารอาหารหลัก',
+            $imageBlob
+        ]);
+
+    
         return $result->text();
 
     } catch (\Exception $e) {

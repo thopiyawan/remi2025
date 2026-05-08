@@ -4507,7 +4507,6 @@ private function detectIntent(string $text, string $sessionId)
 
     return $response->json();
 }
-
 private function analyzeImageWithGemini($imageBinary)
 {
     try {
@@ -4531,6 +4530,7 @@ private function analyzeImageWithGemini($imageBinary)
         return "AI Error: " . $e->getMessage(); 
     }
 }
+
 
    
 }

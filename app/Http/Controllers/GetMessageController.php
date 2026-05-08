@@ -4511,7 +4511,7 @@ private function analyzeImageWithGemini($imageBinary)
         );
 
         // ???????? Gemini 1.5 Flash
-        $result = Gemini::gemini15Flash()
+        $result = Gemini::generativeModel(model: 'gemini-2.0-flash')
             ->generateContent([
                 'ภาพอะไร',
                 $imageBlob

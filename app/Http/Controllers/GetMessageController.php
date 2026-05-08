@@ -4576,8 +4576,8 @@ private function analyzeImageWithGemini($imageBinary)
     $data = $response->json();
 
     // ตรวจสอบว่ามีโครงสร้างที่ต้องการจริงไหมก่อนดึงค่า
-    if (isset($data[0]['candidates'][0]['content']['parts'][0]['text'])) {
-        $resultText = $data[0]['candidates'][0]['content']['parts'][0]['text'];
+    if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+        $resultText = $data['candidates'][0]['content']['parts'][0]['text'];
         
         // พยายาม Parse JSON ที่ Gemini ตอบกลับมา
         $foodData = json_decode($resultText, true);

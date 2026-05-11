@@ -4515,7 +4515,7 @@ private function analyzeImageWithGemini($imageBinary)
         // $location = 'us-central1'; 
         // $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
         $location = 'us-central1'; 
-        $modelId = 'gemini-1.5-flash-002';
+        $modelId = 'gemini-1.5-flash';
 
         // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
         $credentials = new ServiceAccountCredentials(

@@ -4512,8 +4512,10 @@ private function analyzeImageWithGemini($imageBinary)
 {
     try {
         $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
-        $location = 'us-central1'; 
-        $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+        // $location = 'us-central1'; 
+        // $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+        $location = 'asia-southeast1'; 
+        $modelId = 'gemini-1.5-flash-002';
 
         // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
         $credentials = new ServiceAccountCredentials(
@@ -4557,10 +4559,15 @@ private function analyzeImageWithGemini($imageBinary)
             ]
         ],
         // --- วางตรงนี้ครับ (ระดับเดียวกับ contents) ---
+            // 'generationConfig' => [
+            //     'temperature' => 0.2, 
+            //     'maxOutputTokens' => 4096, 
+            //     'response_mime_type' => 'application/json', 
+            // ],
             'generationConfig' => [
-                'temperature' => 0.2, 
-                'maxOutputTokens' => 4096, 
-                'response_mime_type' => 'application/json', 
+                'temperature' => 0.1, // ยิ่งค่าน้อย AI จะยิ่งตัดสินใจเร็วและไม่ลังเล
+                'maxOutputTokens' => 1024, // จำกัดให้พอดีกับ JSON (ไม่ต้องเผื่อเยอะเกินไปจะช่วยให้จบงานไวขึ้น)
+                'response_mime_type' => 'application/json',
             ],
     ];
 

@@ -4527,42 +4527,80 @@ private function analyzeImageWithGemini($imageBinary)
         $url = "https://{$location}-aiplatform.googleapis.com/v1/projects/{$projectId}/locations/{$location}/publishers/google/models/{$modelId}:generateContent";
         // 3. เตรียม Payload ตามโครงสร้าง Vertex AI API
         $payload = [
-        'contents' => [
+       'contents' => [
+    [
+        'role' => 'user',
+        'parts' => [
             [
-                'role' => 'user',
-                'parts' => [
-                    ['text' => 'วิเคราะห์ภาพอาหารนี้'],
-                    [
-                        'inline_data' => [
-                            'mime_type' => 'image/jpeg',
-                            'data' => base64_encode($imageBinary)
-                        ]
-                    ]
-                ]
-            ]
-        ],
-        'systemInstruction' => [
-            'parts' => [
-                ['text' => 'ช่วยวิเคราะห์ภาพอาหารและตอบกลับในรูปแบบ JSON เท่านั้น เป็นภาษาไทย โดยมีโครงสร้างดังนี้:
-                {
-                    "food_detected": [],
-                    "portion_estimation": {},
-                    "nutrition_estimate": {"calories": "", "carbohydrate": "", "protein": "", "fat": ""},
-                    "total_carb_estimate": "",
-                    "glycemic_load": {"level": "", "reason": ""},
-                    "blood_sugar_risk_factors": [],
-                    "gdm_recommendation": {"should_adjust": boolean, "suggestions": []},
-                    "confidence": float
+                'text' => '
+              วิเคราะห์ภาพอาหารสำหรับหญิงตั้งครรภ์
+
+              ประเมิน:
+              - ประเภทอาหาร
+              - ปริมาณโดยประมาณ
+              - ความเสี่ยงน้ำตาลขึ้นเร็ว
+              - คำแนะนำในการกิน
+
+              ตอบกลับเป็น JSON เท่านั้น
+              '
+                          ],
+                          [
+                              'inline_data' => [
+                                  'mime_type' => 'image/jpeg',
+                                  'data' => base64_encode($imageBinary)
+                              ]
+                          ]
+                      ]
+                  ]
+              ],
+
+              'systemInstruction' => [
+                  'parts' => [
+                      [
+                          'text' => '
+              คุณคือ AI นักโภชนาการสำหรับหญิงตั้งครรภ์
+
+              ตอบกลับเป็น JSON เท่านั้น
+              ห้าม markdown
+              ห้ามมีคำอธิบายอื่น
+
+              JSON schema:
+
+              {
+                "clinical_data": {
+                  "food_detected": [],
+                  "estimated_nutrition": {
+                    "calories_kcal": 0,
+                    "carbohydrate_g": 0,
+                    "protein_g": 0,
+                    "fat_g": 0,
+                    "fiber_g": 0
+                  },
+                  "glycemic_load": {
+                    "score": 0,
+                    "level": ""
+                  },
+                  "meal_risk": {
+                    "postprandial_glucose_risk": ""
+                  },
+                  "portion_assessment": {
+                    "carb_portion": ""
+                  },
+                  "confidence": 0
+                },
+
+                "user_summary": {
+                  "meal_detected": "",
+                  "risk_level": "",
+                  "simple_message": "",
+                  "recommendations": [],
+                  "daily_summary": ""
                 }
-                ห้ามมีคำอธิบายอื่นนอกเหนือจาก JSON']
-            ]
-        ],
-        // --- วางตรงนี้ครับ (ระดับเดียวกับ contents) ---
-            'generationConfig' => [
-                'temperature' => 0.1, 
-                'maxOutputTokens' => 4096, 
-                'response_mime_type' => 'application/json', 
-            ],
+              }
+              '
+                      ]
+                  ]
+              ],
          
     ];
 
@@ -4577,12 +4615,12 @@ private function analyzeImageWithGemini($imageBinary)
     // ตรวจสอบว่ามีโครงสร้างที่ต้องการจริงไหมก่อนดึงค่า
     if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
         $resultText = $data['candidates'][0]['content']['parts'][0]['text'];
-        
-        // พยายาม Parse JSON ที่ Gemini ตอบกลับมา
-        $foodData = json_decode($resultText, true);
+        $resultJson = json_decode($resultText, true);
+        $userSummary = $resultJson['user_summary'];
+        $clinicalData = $resultJson['clinical_data'];
 
         if (json_last_error() === JSON_ERROR_NONE) {
-            return $this->formatLineResponse($foodData);
+            return $this->formatLineResponse($userSummary);
         } else {
             \Log::error("Gemini JSON Parse Error: " . $resultText);
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
@@ -4599,13 +4637,15 @@ private function analyzeImageWithGemini($imageBinary)
 
 private function formatLineResponse($data)
 {
-    $msg = "🔍 ผลการวิเคราะห์: " . implode(', ', $data['food_detected']) . "\n";
-    $msg .= "🔥 พลังงาน: " . $data['nutrition_estimate']['calories'] . "\n";
-    $msg .= "📊 สารอาหาร: P:" . $data['nutrition_estimate']['protein'] . " C:" . $data['nutrition_estimate']['carbohydrate'] . " F:" . $data['nutrition_estimate']['fat'] . "\n\n";
-    
-    $msg .= "⚠️ ปัจจัยเสี่ยง: \n- " . implode("\n- ", $data['blood_sugar_risk_factors']) . "\n\n";
-    
-    $msg .= "💡 คำแนะนำ: \n- " . implode("\n- ", $data['gdm_recommendation']['suggestions']);
+      $msg  = "🍽️ " . $userSummary['meal_detected'] . "\n\n";
+      $msg .= $userSummary['simple_message'] . "\n\n";
+
+      $msg .= "💡 คำแนะนำ\n";
+      foreach ($userSummary['recommendations'] as $rec) {
+          $msg .= "• {$rec}\n";
+      }
+
+      $msg .= "\n📊 " . $userSummary['daily_summary'];
 
     return $msg;
 }

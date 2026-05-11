@@ -4635,7 +4635,7 @@ private function analyzeImageWithGemini($imageBinary)
     }
 }
 
-private function formatLineResponse($data)
+private function formatLineResponse($userSummary)
 {
       $msg  = "🍽️ " . $userSummary['meal_detected'] . "\n\n";
       $msg .= $userSummary['simple_message'] . "\n\n";

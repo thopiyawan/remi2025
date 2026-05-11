@@ -4558,11 +4558,7 @@ private function analyzeImageWithGemini($imageBinary)
                   'parts' => [
                       [
                           'text' => '
-              คุณคือ AI นักโภชนาการสำหรับหญิงตั้งครรภ์
-
-              ตอบกลับเป็น JSON เท่านั้น
-              ห้าม markdown
-              ห้ามมีคำอธิบายอื่น
+              คุณคือ AI นักโภชนาการสำหรับหญิงตั้งครรภ์ ตอบกลับเป็น JSON เท่านั้น ห้าม markdown ห้ามมีคำอธิบายอื่น และขอสั้นกระชับสำหรับฝั่ง user_summary ตัวเลขขอเป็นเลขเดียวไม่เอาค่าระหว่าง
 
               JSON schema:
 
@@ -4591,6 +4587,7 @@ private function analyzeImageWithGemini($imageBinary)
 
                 "user_summary": {
                   "meal_detected": "",
+                  "calories_kcal": 0,
                   "risk_level": "",
                   "simple_message": "",
                   "recommendations": [],

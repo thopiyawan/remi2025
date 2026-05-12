@@ -4332,7 +4332,7 @@ if(!is_null($events)){
                           $projectId = 'remiai-29f47';
                           $sessionId = '2f77c150-fc27-fc5b-b1c9-828de82d2d82';
                           $languageCode = 'th';
-                          $userMessage =  $this->detect_intent_texts($projectId, $text1, $sessionId,$languageCode);
+                          //$userMessage =  $this->detect_intent_texts($projectId, $text1, $sessionId,$languageCode);
 
                           $userMessage = $this->chatWithGemini($text1);
                           $case = 1;
@@ -4665,7 +4665,7 @@ public function chatWithGemini($userMessage)
         ],
         'systemInstruction' => [
             'parts' => [
-                ['text' => 'คุณคือผู้ช่วยอัจฉริยะในระบบ REMI ตอบคำถามสุขภาพและโภชนาการอย่างสุภาพและกระชับ']
+                ['text' => 'คุณคือผู้ช่วยหญิงตั้งครรภ์อัจฉริยะในระบบ REMI ตอบคำถามสุขภาพและโภชนาการอย่างสุภาพและกระชับ']
             ]
         ],
         'generationConfig' => [

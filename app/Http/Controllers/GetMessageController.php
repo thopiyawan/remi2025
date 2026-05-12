@@ -4333,6 +4333,8 @@ if(!is_null($events)){
                           $sessionId = '2f77c150-fc27-fc5b-b1c9-828de82d2d82';
                           $languageCode = 'th';
                           $userMessage =  $this->detect_intent_texts($projectId, $text1, $sessionId,$languageCode);
+
+                          $userMessage = $this->chatWithGemini($text1);
                           $case = 1;
                           // $userMessage =  'ยังไม่เข้าใจ';
                             if(strpos($userMessage, 'ยังไม่เข้าใจ') !== false){
@@ -4645,6 +4647,44 @@ private function formatLineResponse($userSummary)
       $msg .= "\n📊 " . $userSummary['daily_summary'];
 
     return $msg;
+}
+
+public function chatWithGemini($userMessage)
+{
+    // ... ส่วนการดึง Access Token และ URL เหมือนเดิม ...
+    // แนะนำใช้ $location = 'us-central1' และ $modelId = 'gemini-1.5-flash'
+
+    $payload = [
+        'contents' => [
+            [
+                'role' => 'user',
+                'parts' => [
+                    ['text' => $userMessage] // ข้อความที่ User พิมพ์มาจาก LINE
+                ]
+            ]
+        ],
+        'systemInstruction' => [
+            'parts' => [
+                ['text' => 'คุณคือผู้ช่วยอัจฉริยะในระบบ REMI ตอบคำถามสุขภาพและโภชนาการอย่างสุภาพและกระชับ']
+            ]
+        ],
+        'generationConfig' => [
+            'temperature' => 0.7, // ให้มีความเป็นธรรมชาติในการคุย
+            'maxOutputTokens' => 1000,
+        ]
+    ];
+
+    $response = Http::withToken($accessToken)
+        ->timeout(30) // ข้อความอย่างเดียว 30 วินาทีก็พอครับ
+        ->post($url, $payload);
+
+    if ($response->successful()) {
+        $data = $response->json();
+        // ดึงข้อความตอบกลับจาก AI
+        return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'ขอโทษทีครับ ผมไม่เข้าใจคำถามนี้';
+    }
+    
+    return "ระบบขัดข้องชั่วคราวครับ";
 }
 
    

@@ -155,7 +155,7 @@ class GetMessageController extends Controller {
                 $userId     = $eventObj->getUserId();
 
                 // 1. ตอบกลับทันทีว่าได้รับแล้ว (ป้องกันความสับสน)
-                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("ได้รับรูปภาพแล้วครับ กำลังคำนวณสารอาหารให้สักครู่... 🥗"));
+                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("ได้รับรูปภาพแล้วค่ะ กำลังคำนวณสารอาหารให้สักครู่... 🥗"));
 
                 // 2. ดึงรูปภาพ
                 $response = $bot->getMessageContent($messageId);
@@ -4689,16 +4689,16 @@ public function chatWithGemini($userMessage)
     ];
 
     $response = Http::withToken($accessToken)
-        ->timeout(30) // ข้อความอย่างเดียว 30 วินาทีก็พอครับ
+        ->timeout(30) // ข้อความอย่างเดียว 30 วินาทีก็พอ
         ->post($url, $payload);
 
     if ($response->successful()) {
         $data = $response->json();
         // ดึงข้อความตอบกลับจาก AI
-        return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'ขอโทษทีครับ ผมไม่เข้าใจคำถามนี้';
+        return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'ขอโทษทีค่ะ เรมี่ไม่เข้าใจคำถามนี้';
     }
     
-    return "ระบบขัดข้องชั่วคราวครับ";
+    return "ระบบขัดข้องชั่วคราวค่ะ";
 }
 
    

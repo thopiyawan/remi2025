@@ -4653,7 +4653,21 @@ public function chatWithGemini($userMessage)
 {
     // ... ส่วนการดึง Access Token และ URL เหมือนเดิม ...
     // แนะนำใช้ $location = 'us-central1' และ $modelId = 'gemini-1.5-flash'
+    $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
+        $location = 'us-central1'; 
+        $modelId = 'gemini-2.5-flash'; // Vertex AI แนะนำตัวนี้สำหรับงานความเร็วสูง
+       
 
+        // 1. สร้าง Access Token จาก Service Account JSON (ไฟล์ที่คุณลงไว้)
+        $credentials = new ServiceAccountCredentials(
+            'https://www.googleapis.com/auth/cloud-platform',
+            storage_path('app/google-auth.json')
+        );
+        $accessToken = $credentials->fetchAuthToken()['access_token'];
+
+        // 2. เตรียม URL สำหรับ Vertex AI
+        $url = "https://{$location}-aiplatform.googleapis.com/v1/projects/{$projectId}/locations/{$location}/publishers/google/models/{$modelId}:generateContent";
+        // 3. เตรียม Payload ตามโครงสร้าง Vertex AI API
     $payload = [
         'contents' => [
             [

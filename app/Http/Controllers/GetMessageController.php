@@ -4627,15 +4627,13 @@ private function analyzeImageWithGemini($imageBinary)
     if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
         $resultText = $data['candidates'][0]['content']['parts'][0]['text'];
         $resultJson = json_decode($resultText, true);
-        $userSummary = $resultJson['user_summary'];
-        $clinicalData = $resultJson['clinical_data'];
 
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $this->formatLineResponse($userSummary);
-        } else {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             \Log::error("Gemini JSON Parse Error: " . $resultText);
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
+
+        return $this->formatLineResponse($resultJson);
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
@@ -4646,35 +4644,42 @@ private function analyzeImageWithGemini($imageBinary)
     }
 }
 
-private function formatLineResponse($userSummary)
+private function formatLineResponse($data)
 {
-      $msg  = "🍽️ " . $userSummary['meal_detected'] . "\n\n";
+    $nutrition = $data['nutritional_summary'] ?? [];
+    $analysis = $data['clinical_analysis'] ?? [];
+    $recommendations = $data['recommendation'] ?? [];
+    $foods = $data['foods'] ?? [];
 
-      $msg .= $userSummary['simple_message'] . "\n\n";
+    $foodNames = [];
 
-      $msg .= "📊 ข้อมูลโภชนาการ\n";
-      $msg .= "• คาร์บ: " . $clinicalData['estimated_nutrition']['carbohydrate_g'] . " g\n";
-      $msg .= "• โปรตีน: " . $clinicalData['estimated_nutrition']['protein_g'] . " g\n";
-      $msg .= "• ไขมัน: " . $clinicalData['estimated_nutrition']['fat_g'] . " g\n";
-      $msg .= "• ใยอาหาร: " . $clinicalData['estimated_nutrition']['fiber_g'] . " g\n";
-      $msg .= "• พลังงาน: " . $clinicalData['estimated_nutrition']['calories_kcal'] . " kcal\n\n";
+    foreach ($foods as $food) {
+        $foodNames[] = $food['name'] ?? '-';
+    }
 
-      $msg .= "🩸 ระดับน้ำตาล\n";
-      $msg .= "• Glycemic Load: " . $clinicalData['glycemic_load']['level'] . "\n";
-      $msg .= "• ความเสี่ยงน้ำตาลหลังอาหาร: " . $clinicalData['meal_risk']['postprandial_glucose_risk'] . "\n\n";
+    $msg  = "🍽️ " . implode(', ', $foodNames) . "\n\n";
 
-      $msg .= "💡 คำแนะนำ\n";
+    $msg .= "🩺 การประเมิน\n";
+    $msg .= ($analysis['postprandial_impact_assessment'] ?? '-') . "\n\n";
 
-      foreach ($userSummary['recommendations'] as $rec) {
-          $msg .= "• {$rec}\n";
-      }
+    $msg .= "📊 ข้อมูลโภชนาการ\n";
+    $msg .= "• คาร์บ: " . ($nutrition['carbohydrate_g'] ?? '-') . " g\n";
+    $msg .= "• โปรตีน: " . ($nutrition['protein_g'] ?? '-') . " g\n";
+    $msg .= "• ไขมัน: " . ($nutrition['fat_g'] ?? '-') . " g\n";
+    $msg .= "• ใยอาหาร: " . ($nutrition['fiber_g'] ?? '-') . " g\n";
+    $msg .= "• พลังงาน: " . ($nutrition['calories_kcal'] ?? '-') . " kcal\n\n";
 
-      $msg .= "\n📌 สัดส่วนอาหาร\n";
-      $msg .= "• ปริมาณคาร์บ: " . $clinicalData['portion_assessment']['carb_portion'] . "\n";
+    $msg .= "🩸 ระดับน้ำตาล\n";
+    $msg .= "• Glycemic Load: " . ($analysis['glycemic_load_level'] ?? '-') . "\n";
+    $msg .= "• ระดับความเสี่ยง: " . ($analysis['meal_risk_level'] ?? '-') . "\n\n";
 
-      $msg .= "\n📊 " . $userSummary['daily_summary'];
+    $msg .= "💡 คำแนะนำ\n";
 
-          return $msg;
+    foreach ($recommendations as $rec) {
+        $msg .= "• {$rec}\n";
+    }
+
+    return $msg;
 }
 
 public function chatWithGemini($userMessage)

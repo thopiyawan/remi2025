@@ -4591,7 +4591,7 @@ private function analyzeImageWithGemini($imageBinary)
                       "protein": 0,
                       "fat": 0,
                       "fiber": 0,
-                      "portion_estimation":0
+                      "portion_estimation":0(g)
                     },
                     "analysis": {
                       "gl_level": "low|medium|high",

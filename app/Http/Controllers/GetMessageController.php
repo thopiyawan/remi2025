@@ -4561,7 +4561,7 @@ private function analyzeImageWithGemini($imageBinary)
                   [
             'text' => '
                   คุณคือนักโภชนาการสำหรับหญิงตั้งครรภ์
-                  วิเคราะห์ภาพอาหารและตอบกลับเป็น JSON เท่านั้น analysis และ recommendations ขอสั้นกระชับเข้าใจง่าย ขอเป็นหน่วยทัพพี ช้อน ชิ้น ที่เข้าใจง่ายๆ
+                  วิเคราะห์ภาพอาหารและตอบกลับเป็น JSON เท่านั้น analysis และ recommendations ขอสั้นกระชับเข้าใจง่าย ขอเป็นหน่วยทัพพี ช้อนโต๊ะ ชิ้น ที่คนอ่านเข้าใจง่ายๆ
                   ห้ามใช้ markdown
                   ห้ามใส่ ```json
                   ประเมิน:
@@ -4669,12 +4669,12 @@ private function formatLineResponse($data)
     }
 
     $msg .= "📊 ข้อมูลโภชนาการ\n";
-    $msg .= "• คาร์บ: " . ($nutrition['carb'] ?? '-') . "\n";
-    $msg .= "• โปรตีน: " . ($nutrition['protein'] ?? '-') . "\n";
-    $msg .= "• ไขมัน: " . ($nutrition['fat'] ?? '-') . " \n";
-    $msg .= "• ใยอาหาร: " . ($nutrition['fiber'] ?? '-') . " \n";
-    $msg .= "• พลังงาน: " . ($nutrition['calories'] ?? '-') . "\n";
-    $msg .= "• ปริมาณ: " . ($nutrition['portion_estimation'] ?? '-') . "\n\n";
+    $msg .= "• คาร์บ: " . ($nutrition['carb'] ?? '-') . " g\n";
+    $msg .= "• โปรตีน: " . ($nutrition['protein'] ?? '-') . " g\n";
+    $msg .= "• ไขมัน: " . ($nutrition['fat'] ?? '-') . " g\n";
+    $msg .= "• ใยอาหาร: " . ($nutrition['fiber'] ?? '-') . " g\n";
+    $msg .= "• พลังงาน: " . ($nutrition['calories'] ?? '-') . " kcal\n";
+    $msg .= "• ปริมาณ: " . ($nutrition['portion_estimation'] ?? '-') . " g\n\n";
 
     $msg .= "🩸 การวิเคราะห์\n";
     $msg .= "• GL: " . ($analysis['gl_level'] ?? '-') . "\n";

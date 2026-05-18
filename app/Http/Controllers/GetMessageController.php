@@ -4561,7 +4561,7 @@ private function analyzeImageWithGemini($imageBinary)
                   [
             'text' => '
                   คุณคือนักโภชนาการสำหรับหญิงตั้งครรภ์
-                  วิเคราะห์ภาพอาหารและตอบกลับเป็น JSON เท่านั้น
+                  วิเคราะห์ภาพอาหารและตอบกลับเป็น JSON เท่านั้น analysis และ recommendations ขอสั้นกระชับเข้าใจง่าย
                   ห้ามใช้ markdown
                   ห้ามใส่ ```json
                   ประเมิน:
@@ -4590,7 +4590,8 @@ private function analyzeImageWithGemini($imageBinary)
                       "carb": 0,
                       "protein": 0,
                       "fat": 0,
-                      "fiber": 0
+                      "fiber": 0,
+                      "portion_estimation":0
                     },
                     "analysis": {
                       "gl_level": "low|medium|high",

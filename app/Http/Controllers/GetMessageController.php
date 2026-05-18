@@ -4560,42 +4560,54 @@ private function analyzeImageWithGemini($imageBinary)
                   'parts' => [
                       [
                           'text' => '
-              คุณคือ AI นักโภชนาการสำหรับหญิงตั้งครรภ์ ตอบกลับเป็น JSON เท่านั้น ห้าม markdown ห้ามมีคำอธิบายอื่น และขอสั้นกระชับสำหรับฝั่ง user_summary ตัวเลขขอเป็นเลขเดียวไม่เอาค่าระหว่าง
+             คุณคือนักโภชนาการคลินิกและผู้เชี่ยวชาญด้านการจัดการโรคเบาหวานขณะตั้งครรภ์ (GDM) ประจำโครงการ REMI
 
-              JSON schema:
+หน้าที่ของคุณคือวิเคราะห์ข้อมูลอาหารที่ได้รับ (ไม่ว่าจะเป็นรูปภาพหรือข้อความ) แล้วตอบกลับเป็นข้อมูลในรูปแบบ JSON ตามโครงสร้างที่กำหนดให้เท่านั้น ห้ามมีข้อความเกริ่นนำ หรือปิดท้ายเด็ดขาด
 
-              {
-                "clinical_data": {
-                  "food_detected": [],
-                  "estimated_nutrition": {
-                    "calories_kcal": 0,
-                    "carbohydrate_g": 0,
-                    "protein_g": 0,
-                    "fat_g": 0,
-                    "fiber_g": 0
-                  },
-                  "glycemic_load": {
-                    "score": 0,
-                    "level": ""
-                  },
-                  "meal_risk": {
-                    "postprandial_glucose_risk": ""
-                  },
-                  "portion_assessment": {
-                    "carb_portion": ""
-                  },
-                  "confidence": 0
-                },
+กฎเกณฑ์การคำนวณและวิเคราะห์โภชนาการ (Nutritional Rules):
+1. คำนวณค่าสารอาหารรวมของทั้งมื้อ (Calories, Carbs, Protein, Fat, Fiber) เป็นตัวเลข (Integer หรือ Float) ตามความเหมาะสมทางโภชนาการ
+2. ประเมินค่า Glycemic Load (GL) ภาพรวมของมื้อ (Low: <=10, Medium: 11-19, High: >=20) พร้อมระบุตัวเลข Score
+3. ประเมินระดับความเสี่ยงของมื้ออาหาร (meal_risk_level) ต่อระดับน้ำตาลในเลือดของผู้ป่วย GDM (high / medium / low) โดยอิงจากปริมาณคาร์โบไฮเดรตเชิงเดี่ยวและค่า GL
+4. ในส่วน recommendation ต้องให้คำแนะนำที่เป็นรูปธรรมในการปรับสัดส่วนอาหารเพื่อลดความเสี่ยง
 
-                "user_summary": {
-                  "meal_detected": "",
-                  "calories_kcal": 0,
-                  "risk_level": "",
-                  "simple_message": "",
-                  "recommendations": [],
-                  "daily_summary": ""
-                }
-              }
+โครงสร้าง JSON ที่คุณต้องตอบกลับ (ตอบเฉพาะ JSON เท่านั้น):
+{
+  "meal_type": "ประเภทมื้ออาหารภาษาไทย (เช่น เช้า, ว่างเช้า, กลางวัน, ว่างบ่าย, เย็น, ว่างก่อนนอน)",
+  "recorded_time": "เวลาที่ได้รับข้อมูล เช่น 12:15",
+  "foods": [
+    {
+      "name": "ชื่ออาหารหลัก",
+      "ingredients": [
+        {
+          "name": "ชื่อวัตถุดิบหลัก",
+          "portion": 0.0,
+          "unit": "หน่วยวัด เช่น ทัพพี, ชิ้น, กรัม, ช้อนโต๊ะ"
+        }
+      ]
+    }
+  ],
+  "nutritional_summary": {
+    "calories_kcal": 0,
+    "carbohydrate_g": 0.0,
+    "carbohydrate_exchanges": 0.0,
+    "protein_g": 0.0,
+    "fat_g": 0.0,
+    "fiber_g": 0.0,
+    "sugar_g": 0.0
+  },
+  "clinical_analysis": {
+    "carbs_status": "ระบุ: คาร์บสูงเกินไป / คาร์บพอดี / คาร์บต่ำสำหรับผู้ป่วย GDM",
+    "glycemic_load_score": 0.0,
+    "glycemic_load_level": "ระบุระดับ GL: High / Medium / Low",
+    "meal_risk_level": "ระบุระดับความเสี่ยง: high / medium / low",
+    "postprandial_impact_assessment": "อธิบายสั้นๆ เกี่ยวกับแนวโน้มผลกระทบต่อระดับน้ำตาลในเลือดหลังอาหาร 1-2 ชั่วโมง"
+  },
+  "recommendation": [
+    "คำแนะนำเรื่องการปรับ/ลดสัดส่วนคาร์โบไฮเดรตในมื้อนี้",
+    "คำแนะนำการเลือกวัตถุดิบทดแทนเพื่อลดค่า GL",
+    "คำแนะนำการเพิ่มโปรตีนหรือผักใบเขียวเพื่อช่วยชะลอการดูดซึมน้ำตาล"
+  ]
+}
               '
                       ]
                   ]
@@ -4637,16 +4649,32 @@ private function analyzeImageWithGemini($imageBinary)
 private function formatLineResponse($userSummary)
 {
       $msg  = "🍽️ " . $userSummary['meal_detected'] . "\n\n";
+
       $msg .= $userSummary['simple_message'] . "\n\n";
 
+      $msg .= "📊 ข้อมูลโภชนาการ\n";
+      $msg .= "• คาร์บ: " . $clinicalData['estimated_nutrition']['carbohydrate_g'] . " g\n";
+      $msg .= "• โปรตีน: " . $clinicalData['estimated_nutrition']['protein_g'] . " g\n";
+      $msg .= "• ไขมัน: " . $clinicalData['estimated_nutrition']['fat_g'] . " g\n";
+      $msg .= "• ใยอาหาร: " . $clinicalData['estimated_nutrition']['fiber_g'] . " g\n";
+      $msg .= "• พลังงาน: " . $clinicalData['estimated_nutrition']['calories_kcal'] . " kcal\n\n";
+
+      $msg .= "🩸 ระดับน้ำตาล\n";
+      $msg .= "• Glycemic Load: " . $clinicalData['glycemic_load']['level'] . "\n";
+      $msg .= "• ความเสี่ยงน้ำตาลหลังอาหาร: " . $clinicalData['meal_risk']['postprandial_glucose_risk'] . "\n\n";
+
       $msg .= "💡 คำแนะนำ\n";
+
       foreach ($userSummary['recommendations'] as $rec) {
           $msg .= "• {$rec}\n";
       }
 
+      $msg .= "\n📌 สัดส่วนอาหาร\n";
+      $msg .= "• ปริมาณคาร์บ: " . $clinicalData['portion_assessment']['carb_portion'] . "\n";
+
       $msg .= "\n📊 " . $userSummary['daily_summary'];
 
-    return $msg;
+          return $msg;
 }
 
 public function chatWithGemini($userMessage)

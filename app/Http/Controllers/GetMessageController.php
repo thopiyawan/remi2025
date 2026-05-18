@@ -4654,18 +4654,29 @@ private function formatLineResponse($data)
     $recommendations = $data['recommendation'] ?? [];
     $foods = $data['foods'] ?? [];
 
-    $foodNames = [];
+    $msg = "";
 
     foreach ($foods as $food) {
-        $foodNames[] = $food['name'] ?? '-';
-        $ingredients[] = $food['ingredients'] ?? '-';
+
+        $msg .= "🍽️ " . ($food['name'] ?? '-') . "\n\n";
+
+        // ingredients
+        if (!empty($food['ingredients'])) {
+
+            $msg .= "🥘 ส่วนประกอบ\n";
+
+            foreach ($food['ingredients'] as $ingredient) {
+
+                $name = $ingredient['name'] ?? '-';
+                $portion = $ingredient['portion'] ?? '-';
+                $unit = $ingredient['unit'] ?? '';
+
+                $msg .= "• {$name} {$portion} {$unit}\n";
+            }
+
+            $msg .= "\n";
+        }
     }
-
-    $msg  = "🍽️ " . implode(', ', $foodNames) . "\n\n";
-    $msg  = "ส่วนประกอบ " . implode(', ', $ingredients) . "\n\n";
-
-    $msg .= "🩺 การประเมิน\n";
-    $msg .= ($analysis['postprandial_impact_assessment'] ?? '-') . "\n\n";
 
     $msg .= "📊 ข้อมูลโภชนาการ\n";
     $msg .= "• คาร์บ: " . ($nutrition['carbohydrate_g'] ?? '-') . " g\n";
@@ -4674,9 +4685,10 @@ private function formatLineResponse($data)
     $msg .= "• ใยอาหาร: " . ($nutrition['fiber_g'] ?? '-') . " g\n";
     $msg .= "• พลังงาน: " . ($nutrition['calories_kcal'] ?? '-') . " kcal\n\n";
 
-    $msg .= "🩸 ระดับน้ำตาล\n";
-    $msg .= "• Glycemic Load: " . ($analysis['glycemic_load_level'] ?? '-') . "\n";
-    $msg .= "• ระดับความเสี่ยง: " . ($analysis['meal_risk_level'] ?? '-') . "\n\n";
+    $msg .= "🩸 การวิเคราะห์\n";
+    $msg .= "• GL: " . ($analysis['glycemic_load_level'] ?? '-') . "\n";
+    $msg .= "• ความเสี่ยง: " . ($analysis['meal_risk_level'] ?? '-') . "\n";
+    $msg .= "• " . ($analysis['postprandial_impact_assessment'] ?? '-') . "\n\n";
 
     $msg .= "💡 คำแนะนำ\n";
 

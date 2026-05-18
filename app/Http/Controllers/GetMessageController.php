@@ -4739,8 +4739,9 @@ public function chatWithGemini($userMessage)
     ];
 
     $response = Http::withToken($accessToken)
-        ->timeout(30) // ข้อความอย่างเดียว 30 วินาทีก็พอ
-        ->post($url, $payload);
+              ->timeout(90)
+              ->connectTimeout(20)
+              ->post($url, $payload);
 
     if ($response->successful()) {
         $data = $response->json();

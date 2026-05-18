@@ -4658,9 +4658,11 @@ private function formatLineResponse($data)
 
     foreach ($foods as $food) {
         $foodNames[] = $food['name'] ?? '-';
+        $ingredients[] = $food['ingredients'] ?? '-';
     }
 
     $msg  = "🍽️ " . implode(', ', $foodNames) . "\n\n";
+    $msg  = "ส่วนประกอบ " . implode(', ', $ingredients) . "\n\n";
 
     $msg .= "🩺 การประเมิน\n";
     $msg .= ($analysis['postprandial_impact_assessment'] ?? '-') . "\n\n";

@@ -4637,51 +4637,55 @@ private function analyzeImageWithGemini($imageBinary)
 
 private function formatLineResponse($data)
 {
-    $nutrition = $data['nutritional_summary'] ?? [];
-    $analysis = $data['clinical_analysis'] ?? [];
-    $recommendations = $data['recommendation'] ?? [];
     $foods = $data['foods'] ?? [];
+    $nutrition = $data['nutrition'] ?? [];
+    $analysis = $data['analysis'] ?? [];
+    $recommendations = $data['recommendations'] ?? [];
 
     $msg = "";
 
     foreach ($foods as $food) {
 
-        $msg .= "🍽️ " . ($food['name'] ?? '-') . "\n\n";
+        $msg .= "🍽️ " . ($food['name'] ?? '-') . "\n";
 
-        // ingredients
         if (!empty($food['ingredients'])) {
 
             $msg .= "🥘 ส่วนประกอบ\n";
 
             foreach ($food['ingredients'] as $ingredient) {
 
-                $name = $ingredient['name'] ?? '-';
-                $portion = $ingredient['portion'] ?? '-';
-                $unit = $ingredient['unit'] ?? '';
-
-                $msg .= "• {$name} {$portion} {$unit}\n";
+                $msg .= "• "
+                    . ($ingredient['name'] ?? '-')
+                    . " "
+                    . ($ingredient['portion'] ?? '-')
+                    . " "
+                    . ($ingredient['unit'] ?? '')
+                    . "\n";
             }
-
-            $msg .= "\n";
         }
+
+        $msg .= "\n";
     }
 
     $msg .= "📊 ข้อมูลโภชนาการ\n";
-    $msg .= "• คาร์บ: " . ($nutrition['carbohydrate_g'] ?? '-') . " g\n";
-    $msg .= "• โปรตีน: " . ($nutrition['protein_g'] ?? '-') . " g\n";
-    $msg .= "• ไขมัน: " . ($nutrition['fat_g'] ?? '-') . " g\n";
-    $msg .= "• ใยอาหาร: " . ($nutrition['fiber_g'] ?? '-') . " g\n";
-    $msg .= "• พลังงาน: " . ($nutrition['calories_kcal'] ?? '-') . " kcal\n\n";
+    $msg .= "• คาร์บ: " . ($nutrition['carb'] ?? '-') . " g\n";
+    $msg .= "• โปรตีน: " . ($nutrition['protein'] ?? '-') . " g\n";
+    $msg .= "• ไขมัน: " . ($nutrition['fat'] ?? '-') . " g\n";
+    $msg .= "• ใยอาหาร: " . ($nutrition['fiber'] ?? '-') . " g\n";
+    $msg .= "• พลังงาน: " . ($nutrition['calories'] ?? '-') . " kcal\n\n";
 
     $msg .= "🩸 การวิเคราะห์\n";
-    $msg .= "• GL: " . ($analysis['glycemic_load_level'] ?? '-') . "\n";
-    $msg .= "• ความเสี่ยง: " . ($analysis['meal_risk_level'] ?? '-') . "\n";
-    $msg .= "• " . ($analysis['postprandial_impact_assessment'] ?? '-') . "\n\n";
+    $msg .= "• GL: " . ($analysis['gl_level'] ?? '-') . "\n";
+    $msg .= "• ความเสี่ยง: " . ($analysis['risk_level'] ?? '-') . "\n";
+    $msg .= "• " . ($analysis['message'] ?? '-') . "\n\n";
 
-    $msg .= "💡 คำแนะนำ\n";
+    if (!empty($recommendations)) {
 
-    foreach ($recommendations as $rec) {
-        $msg .= "• {$rec}\n";
+        $msg .= "💡 คำแนะนำ\n";
+
+        foreach ($recommendations as $rec) {
+            $msg .= "• {$rec}\n";
+        }
     }
 
     return $msg;

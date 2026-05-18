@@ -4569,6 +4569,9 @@ private function analyzeImageWithGemini($imageBinary)
 2. ประเมินค่า Glycemic Load (GL) ภาพรวมของมื้อ (Low: <=10, Medium: 11-19, High: >=20) พร้อมระบุตัวเลข Score
 3. ประเมินระดับความเสี่ยงของมื้ออาหาร (meal_risk_level) ต่อระดับน้ำตาลในเลือดของผู้ป่วย GDM (high / medium / low) โดยอิงจากปริมาณคาร์โบไฮเดรตเชิงเดี่ยวและค่า GL
 4. ในส่วน recommendation ต้องให้คำแนะนำที่เป็นรูปธรรมในการปรับสัดส่วนอาหารเพื่อลดความเสี่ยง
+ห้ามใช้ markdown
+ห้ามใช้ ```json
+ตอบ raw JSON เท่านั้น 
 
 โครงสร้าง JSON ที่คุณต้องตอบกลับ (ตอบเฉพาะ JSON เท่านั้น):
 {

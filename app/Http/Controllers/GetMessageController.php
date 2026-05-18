@@ -4674,6 +4674,7 @@ private function formatLineResponse($data)
     $msg .= "• ไขมัน: " . ($nutrition['fat'] ?? '-') . " g\n";
     $msg .= "• ใยอาหาร: " . ($nutrition['fiber'] ?? '-') . " g\n";
     $msg .= "• พลังงาน: " . ($nutrition['calories'] ?? '-') . " kcal\n\n";
+    $msg .= "• ปริมาณ: " . ($nutrition['portion_estimation'] ?? '-') . " \n\n";
 
     $msg .= "🩸 การวิเคราะห์\n";
     $msg .= "• GL: " . ($analysis['gl_level'] ?? '-') . "\n";

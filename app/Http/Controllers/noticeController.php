@@ -169,9 +169,9 @@ class noticeController extends Controller {
     $user_select = $this->user_select($status);
 
     $arrlength = count($user_select);
-    for($x = 0; $x < $arrlength ; ++$x) {
-      $user_id = $user_select[$x];
-      // $user_id = 'U2dc636d2cd052e82c29f5284e00f69b9';
+   // for($x = 0; $x < $arrlength ; ++$x) {
+      //$user_id = $user_select[$x];
+      $user_id = 'U2dc636d2cd052e82c29f5284e00f69b9';
 
       // $RecordOfPregnancy = $this->RecordOfPregnancy($user_id);
       // $preg_week = $RecordOfPregnancy->preg_week;
@@ -219,7 +219,7 @@ class noticeController extends Controller {
           $response->getHTTPStatus() . ' ' . $response->getRawBody();
         }
         $up= $this->user_update($preg_week,$user_id);
-    }
+    //}
       
   }
   public function users_register_select($user_id) {

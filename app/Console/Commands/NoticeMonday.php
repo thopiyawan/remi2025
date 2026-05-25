@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
+use App\Http\Controllers\noticeController;
 
 use Illuminate\Console\Command;
 

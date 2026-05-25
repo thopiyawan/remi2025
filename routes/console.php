@@ -22,5 +22,5 @@ Schedule::command('app:notice-monday')
     ->timezone('Asia/Bangkok')
     ->weeklyOn(1, '9:00'); // Monday
 
-Schedule::command('app:notice-monday')
-    ->everyMinute();    
+// Schedule::command('app:notice-monday')
+//     ->everyMinute();    

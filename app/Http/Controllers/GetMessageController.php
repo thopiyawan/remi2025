@@ -4309,8 +4309,8 @@ if(!is_null($events)){
               
               $graph_blood = (new diaryController)->graph_sugar_blood($user);
             }else{
-                    $da =  (new CalController)->cal_food($userMessage);
-                         if($da==null){
+                    // $da =  (new CalController)->cal_food($userMessage);
+                    //      if($da==null){
                             $Message = $userMessage;
                                //  $x_tra = "ตั้งครรภ์".$userMessage;
                                //  $newStr =  preg_replace("[ ]","",$x_tra);
@@ -4366,17 +4366,17 @@ if(!is_null($events)){
                                 $Message = $userMessage;
                                 $log_message = (new SqlController)->log_message_bot_to_mom($user,$Message,$message_type);
                           }
-                         }else{
-                                $case = 1;
-                                $comma_separated = implode("\n", $da);
-                                $userMessage = $comma_separated." นะคะ";
-                                $Message =$userMessage;
-                                $message_type = '01';
-                                $log_message = (new SqlController)->log_message($user,$Message,$message_type);
-                                $message_type = '02';
-                                $Message = $userMessage;
-                                $log_message = (new SqlController)->log_message_bot_to_mom($user,$Message,$message_type);
-                         }
+                        //  }else{
+                        //         $case = 1;
+                        //         $comma_separated = implode("\n", $da);
+                        //         $userMessage = $comma_separated." นะคะ";
+                        //         $Message =$userMessage;
+                        //         $message_type = '01';
+                        //         $log_message = (new SqlController)->log_message($user,$Message,$message_type);
+                        //         $message_type = '02';
+                        //         $Message = $userMessage;
+                        //         $log_message = (new SqlController)->log_message_bot_to_mom($user,$Message,$message_type);
+                        //  }
             }
            
             $last_chat = (new SqlController)->last_chat($user);

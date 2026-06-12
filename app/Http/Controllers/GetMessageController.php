@@ -179,7 +179,7 @@ class GetMessageController extends Controller {
                    // $bot->pushMessage($userId, $flexMessage);
 
                     $flex = $this->analyzeImageWithGemini($imageBinary);
-
+                    \Log::info($flex);
                     $flexMessage = [
                         'type' => 'flex',
                         'altText' => 'ผลวิเคราะห์อาหาร',

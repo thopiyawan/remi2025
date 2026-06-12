@@ -174,14 +174,21 @@ class GetMessageController extends Controller {
                    // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                    // $bot->pushMessage($userId, $textMessageBuilder);
 
+
+                   // $bot->pushMessage($userId, $flexMessage);
+
                     $flex = $this->analyzeImageWithGemini($imageBinary);
 
-                    $flexMessage = new \LINE\LINEBot\MessageBuilder\FlexMessageBuilder(
-                        'ผลวิเคราะห์อาหาร',
-                        $flex
-                    );
+                    $flexMessage = [
+                        'type' => 'flex',
+                        'altText' => 'ผลวิเคราะห์อาหาร',
+                        'contents' => $flex
+                    ];
 
-                    $bot->pushMessage($userId, $flexMessage);
+                    $bot->replyMessage(
+                        $replyToken,
+                        new RawMessageBuilder($flexMessage)
+                    );
                 }
                 continue;
             }

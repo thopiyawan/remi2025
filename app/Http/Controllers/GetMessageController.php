@@ -167,11 +167,21 @@ class GetMessageController extends Controller {
                     // AnalyzeImageJob::dispatch($userId, $imageBinary);
                     
                     // แบบ Synchronous (สำหรับการทดสอบ)
-                    $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                   // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                    
 
                     // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
-                    $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                    $bot->pushMessage($userId, $textMessageBuilder);
+                   // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                   // $bot->pushMessage($userId, $textMessageBuilder);
+
+                    $flex = $this->analyzeImageWithGemini($imageBinary);
+
+                    $flexMessage = new \LINE\LINEBot\MessageBuilder\FlexMessageBuilder(
+                        'ผลวิเคราะห์อาหาร',
+                        $flex
+                    );
+
+                    $bot->pushMessage($userId, $flexMessage);
                 }
                 continue;
             }

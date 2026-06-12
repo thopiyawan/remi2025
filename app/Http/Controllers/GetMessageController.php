@@ -4625,7 +4625,8 @@ private function analyzeImageWithGemini($imageBinary)
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
 
-        return $this->formatLineResponse($resultJson);
+        //return $this->formatLineResponse($resultJson);
+        return $this->buildFlexMessage($resultJson);
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
@@ -4746,6 +4747,268 @@ public function chatWithGemini($userMessage)
     }
     
     return "ระบบขัดข้องชั่วคราวค่ะ";
+}
+
+private function buildFlexMessage(array $data)
+{
+    $nutrition = $data['nutrition'] ?? [];
+    $analysis = $data['analysis'] ?? [];
+    $recommendations = $data['recommendations'] ?? [];
+    $foods = $data['foods'] ?? [];
+
+    $mealName = $foods[0]['name'] ?? 'ไม่ทราบชื่ออาหาร';
+
+    $riskText = match ($analysis['risk_level'] ?? '') {
+        'low' => 'ดี',
+        'medium' => 'พอใช้',
+        'high' => 'ควรระวัง',
+        default => 'พอใช้'
+    };
+
+    $analysisText = $analysis['message'] ?? '';
+
+    if (is_array($analysisText)) {
+        $analysisText = '• ' . implode("\n• ", $analysisText);
+    }
+
+    $recommendText = '';
+
+    foreach ($recommendations as $rec) {
+        $recommendText .= "• {$rec}\n";
+    }
+
+    return [
+        "type" => "bubble",
+        "size" => "giga",
+
+        "header" => [
+            "type" => "box",
+            "layout" => "vertical",
+            "backgroundColor" => "#E67E22",
+            "contents" => [
+                [
+                    "type" => "text",
+                    "text" => "🍽️ {$mealName}",
+                    "weight" => "bold",
+                    "size" => "xl",
+                    "color" => "#FFFFFF"
+                ],
+                [
+                    "type" => "text",
+                    "text" => "🟡 มื้อนี้ : {$riskText}",
+                    "color" => "#FFEAA7",
+                    "size" => "sm",
+                    "weight" => "bold",
+                    "margin" => "xs"
+                ]
+            ]
+        ],
+
+        "body" => [
+            "type" => "box",
+            "layout" => "vertical",
+            "spacing" => "md",
+            "contents" => [
+
+                [
+                    "type" => "box",
+                    "layout" => "vertical",
+                    "contents" => [
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "contents" => [
+                                [
+                                    "type" => "text",
+                                    "text" => "⚖️ น้ำหนักอาหาร",
+                                    "size" => "sm",
+                                    "color" => "#7F8C8D"
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => ($nutrition['portion_estimation'] ?? '-') . " g",
+                                    "size" => "sm",
+                                    "align" => "end",
+                                    "weight" => "bold"
+                                ]
+                            ]
+                        ],
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "contents" => [
+                                [
+                                    "type" => "text",
+                                    "text" => "🔥 พลังงานรวม",
+                                    "size" => "sm",
+                                    "color" => "#7F8C8D"
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => ($nutrition['calories'] ?? '-') . " kcal",
+                                    "size" => "sm",
+                                    "align" => "end",
+                                    "weight" => "bold",
+                                    "color" => "#E67E22"
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+
+                [
+                    "type" => "separator"
+                ],
+
+                [
+                    "type" => "box",
+                    "layout" => "vertical",
+                    "contents" => [
+                        [
+                            "type" => "text",
+                            "text" => "📊 สรุปค่าโภชนาการ",
+                            "weight" => "bold",
+                            "size" => "sm"
+                        ],
+
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "margin" => "md",
+                            "contents" => [
+
+                                [
+                                    "type" => "box",
+                                    "layout" => "vertical",
+                                    "contents" => [
+                                        [
+                                            "type" => "text",
+                                            "text" => "คาร์บ",
+                                            "size" => "xxs",
+                                            "align" => "center"
+                                        ],
+                                        [
+                                            "type" => "text",
+                                            "text" => ($nutrition['carb'] ?? 0) . "g",
+                                            "weight" => "bold",
+                                            "align" => "center"
+                                        ]
+                                    ]
+                                ],
+
+                                [
+                                    "type" => "box",
+                                    "layout" => "vertical",
+                                    "contents" => [
+                                        [
+                                            "type" => "text",
+                                            "text" => "โปรตีน",
+                                            "size" => "xxs",
+                                            "align" => "center"
+                                        ],
+                                        [
+                                            "type" => "text",
+                                            "text" => ($nutrition['protein'] ?? 0) . "g",
+                                            "weight" => "bold",
+                                            "align" => "center"
+                                        ]
+                                    ]
+                                ],
+
+                                [
+                                    "type" => "box",
+                                    "layout" => "vertical",
+                                    "contents" => [
+                                        [
+                                            "type" => "text",
+                                            "text" => "ไขมัน",
+                                            "size" => "xxs",
+                                            "align" => "center"
+                                        ],
+                                        [
+                                            "type" => "text",
+                                            "text" => ($nutrition['fat'] ?? 0) . "g",
+                                            "weight" => "bold",
+                                            "align" => "center"
+                                        ]
+                                    ]
+                                ],
+
+                                [
+                                    "type" => "box",
+                                    "layout" => "vertical",
+                                    "contents" => [
+                                        [
+                                            "type" => "text",
+                                            "text" => "ใยอาหาร",
+                                            "size" => "xxs",
+                                            "align" => "center"
+                                        ],
+                                        [
+                                            "type" => "text",
+                                            "text" => ($nutrition['fiber'] ?? 0) . "g",
+                                            "weight" => "bold",
+                                            "align" => "center"
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+
+                [
+                    "type" => "separator"
+                ],
+
+                [
+                    "type" => "box",
+                    "layout" => "vertical",
+                    "contents" => [
+                        [
+                            "type" => "text",
+                            "text" => "⚠️ ผลวิเคราะห์โภชนาการ GDM",
+                            "weight" => "bold",
+                            "size" => "sm",
+                            "color" => "#C0392B"
+                        ],
+                        [
+                            "type" => "text",
+                            "text" => $analysisText,
+                            "wrap" => true,
+                            "size" => "xs",
+                            "margin" => "sm"
+                        ]
+                    ]
+                ],
+
+                [
+                    "type" => "box",
+                    "layout" => "vertical",
+                    "backgroundColor" => "#E8F8F5",
+                    "paddingAll" => "md",
+                    "cornerRadius" => "md",
+                    "contents" => [
+                        [
+                            "type" => "text",
+                            "text" => "💡 แนะนำสำหรับคุณแม่",
+                            "weight" => "bold",
+                            "size" => "sm",
+                            "color" => "#117A65"
+                        ],
+                        [
+                            "type" => "text",
+                            "text" => trim($recommendText),
+                            "wrap" => true,
+                            "size" => "xs",
+                            "margin" => "sm",
+                            "color" => "#16A085"
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ];
 }
 
    

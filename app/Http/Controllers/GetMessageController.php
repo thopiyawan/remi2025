@@ -73,6 +73,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 use LINE\LINEBot\Event\Parser\EventRequestParser;
 use LINE\LINEBot\Exception\InvalidSignatureException;
+use LINE\LINEBot\MessageBuilder\RawMessageBuilder;
 use Gemini\Data\Blob;
 use Gemini\Enums\MimeType;
 use Gemini\Laravel\Facades\Gemini;

@@ -167,11 +167,29 @@ class GetMessageController extends Controller {
                     // AnalyzeImageJob::dispatch($userId, $imageBinary);
                     
                     // แบบ Synchronous (สำหรับการทดสอบ)
-                    $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                    // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
-                    // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
-                    $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                    $bot->pushMessage($userId, $textMessageBuilder);
+                    // // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
+                    // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                    // $bot->pushMessage($userId, $textMessageBuilder);
+                    $flex = $this->analyzeImageWithGemini($imageBinary);
+
+                      Http::withHeaders([
+                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
+                          'Content-Type' => 'application/json'
+                      ])->post(
+                          'https://api.line.me/v2/bot/message/reply',
+                          [
+                              'replyToken' => $replyToken,
+                              'messages' => [
+                                  [
+                                      'type' => 'flex',
+                                      'altText' => 'ผลวิเคราะห์อาหาร',
+                                      'contents' => $flex
+                                  ]
+                              ]
+                          ]
+                      );
                 }
                 continue;
             }
@@ -4625,7 +4643,8 @@ private function analyzeImageWithGemini($imageBinary)
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
 
-        return $this->formatLineResponse($resultJson);
+        //return $this->formatLineResponse($resultJson);
+        return $this->buildFlexMessage($resultJson);
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
@@ -4748,7 +4767,161 @@ public function chatWithGemini($userMessage)
     return "ระบบขัดข้องชั่วคราวค่ะ";
 }
 
+private function buildFlexMessage(array $data)
+{
+    $nutrition = $data['nutrition'] ?? [];
 
+    $recommendText = '';
+
+    foreach (($data['recommendations'] ?? []) as $item) {
+        $recommendText .= "• {$item}\n";
+    }
+
+    return [
+        "type" => "bubble",
+        "size" => "giga",
+
+        "header" => [
+            "type" => "box",
+            "layout" => "vertical",
+            "backgroundColor" => "#E67E22",
+            "contents" => [
+                [
+                    "type" => "text",
+                    "text" => "🍽️ ".$data['meal_name'],
+                    "weight" => "bold",
+                    "size" => "xl",
+                    "color" => "#FFFFFF"
+                ],
+                [
+                    "type" => "text",
+                    "text" => "🟡 มื้อนี้ : ".$data['meal_score'],
+                    "size" => "sm",
+                    "weight" => "bold",
+                    "color" => "#FFEAA7"
+                ]
+            ]
+        ],
+
+        "body" => [
+            "type" => "box",
+            "layout" => "vertical",
+            "contents" => [
+
+                [
+                    "type" => "box",
+                    "layout" => "vertical",
+                    "contents" => [
+
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "contents" => [
+                                [
+                                    "type" => "text",
+                                    "text" => "📏 ขนาดปริมาณ"
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $data['portion_text'],
+                                    "align" => "end"
+                                ]
+                            ]
+                        ],
+
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "contents" => [
+                                [
+                                    "type" => "text",
+                                    "text" => "⚖️ น้ำหนักอาหาร"
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $data['weight']." g",
+                                    "align" => "end"
+                                ]
+                            ]
+                        ],
+
+                        [
+                            "type" => "box",
+                            "layout" => "horizontal",
+                            "contents" => [
+                                [
+                                    "type" => "text",
+                                    "text" => "🔥 พลังงานรวม"
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $nutrition['calories']." kcal",
+                                    "align" => "end"
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+
+                [
+                    "type" => "separator"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" => "📊 สรุปค่าโภชนาการ",
+                    "weight" => "bold"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" =>
+                        "คาร์บ ".$nutrition['carb']."g\n".
+                        "โปรตีน ".$nutrition['protein']."g\n".
+                        "ไขมัน ".$nutrition['fat']."g\n".
+                        "ใยอาหาร ".$nutrition['fiber']."g",
+                    "wrap" => true
+                ],
+
+                [
+                    "type" => "separator"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" => "⚠️ ผลวิเคราะห์โภชนาการ GDM",
+                    "weight" => "bold",
+                    "color" => "#C0392B"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" => $data['analysis']['message'],
+                    "wrap" => true,
+                    "size" => "xs"
+                ],
+
+                [
+                    "type" => "separator"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" => "💡 แนะนำสำหรับคุณแม่",
+                    "weight" => "bold",
+                    "color" => "#117A65"
+                ],
+
+                [
+                    "type" => "text",
+                    "text" => trim($recommendText),
+                    "wrap" => true,
+                    "size" => "xs"
+                ]
+            ]
+        ]
+    ];
+}
 
    
 }

@@ -4657,7 +4657,12 @@ private function analyzeImageWithGemini($imageBinary)
         }
 
         //return $this->formatLineResponse($resultJson);
-        return $this->buildFlexMessage($resultJson);
+        //return $this->buildFlexMessage($resultJson);
+        $flex = $this->buildFlexMessage($resultJson); // array
+        $flexMessage = new FlexMessageBuilder(
+            'ผลวิเคราะห์อาหาร',
+            $flex
+        );
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());

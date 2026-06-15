@@ -167,11 +167,30 @@ class GetMessageController extends Controller {
                     // AnalyzeImageJob::dispatch($userId, $imageBinary);
                     
                     // แบบ Synchronous (สำหรับการทดสอบ)
-                    $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                   // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
                     // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
-                    $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                    $bot->pushMessage($userId, $textMessageBuilder);
+                    //$textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                    //$bot->pushMessage($userId, $textMessageBuilder);
+
+
+                    $flex = $this->analyzeImageWithGemini($imageBinary);
+                    Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
+                        'Content-Type' => 'application/json'
+                    ])->post(
+                        'https://api.line.me/v2/bot/message/reply',
+                        [
+                            'replyToken' => $replyToken,
+                            'messages' => [
+                                [
+                                    'type' => 'flex',
+                                    'altText' => 'ผลวิเคราะห์อาหาร',
+                                    'contents' => $flex
+                                ]
+                            ]
+                        ]
+                    );
                 }
                 continue;
             }
@@ -4627,7 +4646,9 @@ private function analyzeImageWithGemini($imageBinary)
         }
 
         //return $this->formatLineResponse($resultJson);
+        
         return $this->buildFlexMessage($resultJson);
+        
         
     }
 }

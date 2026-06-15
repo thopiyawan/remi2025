@@ -175,6 +175,7 @@ class GetMessageController extends Controller {
 
 
                     $flex = $this->analyzeImageWithGemini($imageBinary);
+
                     Http::withHeaders([
                         'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
                         'Content-Type' => 'application/json'
@@ -192,6 +193,9 @@ class GetMessageController extends Controller {
                         ]
                     );
                 }
+
+                \Log::info($response->status());
+                \Log::info($response->body());
                 continue;
             }
               // ➕ กรณีปลดบล็อค / add friend

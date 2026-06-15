@@ -194,8 +194,8 @@ class GetMessageController extends Controller {
                     );
                 }
 
-                \Log::info($response->status());
-                \Log::info($response->body());
+                \Log::info($response->getHTTPStatus());
+                \Log::info($response->getRawBody());
                 continue;
             }
               // ➕ กรณีปลดบล็อค / add friend

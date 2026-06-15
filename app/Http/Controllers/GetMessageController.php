@@ -4591,6 +4591,7 @@ private function analyzeImageWithGemini($imageBinary)
                   JSON schema:
                   {
                     "meal_type": "",
+                    "full_foodname": "",
                     "foods": [
                       {
                         "name": "",
@@ -4770,11 +4771,15 @@ public function chatWithGemini($userMessage)
 private function buildFlexMessage(array $data)
 {
     $nutrition = $data['nutrition'] ?? [];
+    $analysis = $data['analysis'] ?? [];
 
-    $recommendText = '';
+    $foodName = $data['full_foodname']
+        ?? ($data['foods'][0]['name'] ?? 'ไม่ทราบชื่ออาหาร');
+
+    $recommendations = '';
 
     foreach (($data['recommendations'] ?? []) as $item) {
-        $recommendText .= "• {$item}\n";
+        $recommendations .= "• {$item}\n";
     }
 
     return [
@@ -4788,17 +4793,11 @@ private function buildFlexMessage(array $data)
             "contents" => [
                 [
                     "type" => "text",
-                    "text" => "🍽️ ".$data['meal_name'],
+                    "text" => "🍽️ ".$foodName,
                     "weight" => "bold",
                     "size" => "xl",
-                    "color" => "#FFFFFF"
-                ],
-                [
-                    "type" => "text",
-                    "text" => "🟡 มื้อนี้ : ".$data['meal_score'],
-                    "size" => "sm",
-                    "weight" => "bold",
-                    "color" => "#FFEAA7"
+                    "color" => "#FFFFFF",
+                    "wrap" => true
                 ]
             ]
         ],
@@ -4806,6 +4805,7 @@ private function buildFlexMessage(array $data)
         "body" => [
             "type" => "box",
             "layout" => "vertical",
+            "spacing" => "md",
             "contents" => [
 
                 [
@@ -4819,12 +4819,15 @@ private function buildFlexMessage(array $data)
                             "contents" => [
                                 [
                                     "type" => "text",
-                                    "text" => "📏 ขนาดปริมาณ"
+                                    "text" => "⚖️ น้ำหนักอาหาร",
+                                    "size" => "sm"
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $data['portion_text'],
-                                    "align" => "end"
+                                    "text" => ($nutrition['portion_estimation'] ?? 0)." g",
+                                    "size" => "sm",
+                                    "align" => "end",
+                                    "weight" => "bold"
                                 ]
                             ]
                         ],
@@ -4835,28 +4838,15 @@ private function buildFlexMessage(array $data)
                             "contents" => [
                                 [
                                     "type" => "text",
-                                    "text" => "⚖️ น้ำหนักอาหาร"
+                                    "text" => "🔥 พลังงานรวม",
+                                    "size" => "sm"
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $data['weight']." g",
-                                    "align" => "end"
-                                ]
-                            ]
-                        ],
-
-                        [
-                            "type" => "box",
-                            "layout" => "horizontal",
-                            "contents" => [
-                                [
-                                    "type" => "text",
-                                    "text" => "🔥 พลังงานรวม"
-                                ],
-                                [
-                                    "type" => "text",
-                                    "text" => $nutrition['calories']." kcal",
-                                    "align" => "end"
+                                    "text" => ($nutrition['calories'] ?? 0)." kcal",
+                                    "size" => "sm",
+                                    "align" => "end",
+                                    "weight" => "bold"
                                 ]
                             ]
                         ]
@@ -4870,17 +4860,42 @@ private function buildFlexMessage(array $data)
                 [
                     "type" => "text",
                     "text" => "📊 สรุปค่าโภชนาการ",
-                    "weight" => "bold"
+                    "weight" => "bold",
+                    "size" => "sm"
                 ],
 
                 [
-                    "type" => "text",
-                    "text" =>
-                        "คาร์บ ".$nutrition['carb']."g\n".
-                        "โปรตีน ".$nutrition['protein']."g\n".
-                        "ไขมัน ".$nutrition['fat']."g\n".
-                        "ใยอาหาร ".$nutrition['fiber']."g",
-                    "wrap" => true
+                    "type" => "box",
+                    "layout" => "horizontal",
+                    "contents" => [
+                        [
+                            "type" => "text",
+                            "text" => "คาร์บ ".($nutrition['carb'] ?? 0)."g",
+                            "size" => "xs"
+                        ],
+                        [
+                            "type" => "text",
+                            "text" => "โปรตีน ".($nutrition['protein'] ?? 0)."g",
+                            "size" => "xs"
+                        ]
+                    ]
+                ],
+
+                [
+                    "type" => "box",
+                    "layout" => "horizontal",
+                    "contents" => [
+                        [
+                            "type" => "text",
+                            "text" => "ไขมัน ".($nutrition['fat'] ?? 0)."g",
+                            "size" => "xs"
+                        ],
+                        [
+                            "type" => "text",
+                            "text" => "ใยอาหาร ".($nutrition['fiber'] ?? 0)."g",
+                            "size" => "xs"
+                        ]
+                    ]
                 ],
 
                 [
@@ -4891,12 +4906,13 @@ private function buildFlexMessage(array $data)
                     "type" => "text",
                     "text" => "⚠️ ผลวิเคราะห์โภชนาการ GDM",
                     "weight" => "bold",
+                    "size" => "sm",
                     "color" => "#C0392B"
                 ],
 
                 [
                     "type" => "text",
-                    "text" => $data['analysis']['message'],
+                    "text" => $analysis['message'] ?? '-',
                     "wrap" => true,
                     "size" => "xs"
                 ],
@@ -4909,12 +4925,13 @@ private function buildFlexMessage(array $data)
                     "type" => "text",
                     "text" => "💡 แนะนำสำหรับคุณแม่",
                     "weight" => "bold",
+                    "size" => "sm",
                     "color" => "#117A65"
                 ],
 
                 [
                     "type" => "text",
-                    "text" => trim($recommendText),
+                    "text" => trim($recommendations),
                     "wrap" => true,
                     "size" => "xs"
                 ]

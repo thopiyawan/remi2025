@@ -4649,6 +4649,7 @@ private function formatLineResponse($data)
     foreach ($foods as $food) {
 
         $msg .= "🍽️ " . ($food['name'] ?? '-') . "\n";
+        $msg .= "🍽️ " . ($full_foodname ?? '-') . "\n";
 
         if (!empty($food['ingredients'])) {
 

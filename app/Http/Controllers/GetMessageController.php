@@ -198,15 +198,26 @@ class GetMessageController extends Controller {
                 // \Log::info($response->getRawBody());
 
                 $response = $bot->getMessageContent($messageId);
+                
 
                   if ($response->isSucceeded()) {
 
                       $imageBinary = $response->getRawBody();
+                      Http::withHeaders([
+                          'Authorization' => 'Bearer '.config('line.access_token'),
+                          'Content-Type' => 'application/json'
+                      ])->post(
+                          'https://api.line.me/v2/bot/chat/loading/start',
+                          [
+                              'chatId' => $userId,
+                              'loadingSeconds' => 15
+                          ]
+                      );
 
                       $flex = $this->analyzeImageWithGemini($imageBinary);
 
                       Http::withHeaders([
-                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
+                          'Authorization' => 'Bearer '.config('line.access_token'),
                           'Content-Type' => 'application/json'
                       ])->post(
                           'https://api.line.me/v2/bot/message/reply',

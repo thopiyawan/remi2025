@@ -185,7 +185,7 @@ class GetMessageController extends Controller {
 
                   //   \Log::info('LINE STATUS: '.$response->getHTTPStatus());
                   //   \Log::info('LINE BODY: '.$response->getRawBody());
-
+                  $resultJson = json_decode($resultText, true);
                   $flex = $this->buildFlexMessage($resultJson);
 
                       $response = Http::withHeaders([

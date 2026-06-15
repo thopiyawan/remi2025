@@ -4793,7 +4793,7 @@ private function buildFlexMessage(array $data)
             "contents" => [
                 [
                     "type" => "text",
-                    "text" => "🍽️ ".$foodName,
+                    "text" => "🍽️ ",
                     "weight" => "bold",
                     "size" => "xl",
                     "color" => "#FFFFFF",
@@ -4824,7 +4824,7 @@ private function buildFlexMessage(array $data)
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => ($nutrition['portion_estimation'] ?? 0)." g",
+                                    "text" => " g",
                                     "size" => "sm",
                                     "align" => "end",
                                     "weight" => "bold"
@@ -4843,7 +4843,7 @@ private function buildFlexMessage(array $data)
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => ($nutrition['calories'] ?? 0)." kcal",
+                                    "text" => " kcal",
                                     "size" => "sm",
                                     "align" => "end",
                                     "weight" => "bold"
@@ -4870,12 +4870,12 @@ private function buildFlexMessage(array $data)
                     "contents" => [
                         [
                             "type" => "text",
-                            "text" => "คาร์บ ".($nutrition['carb'] ?? 0)."g",
+                            "text" => "คาร์บ ",
                             "size" => "xs"
                         ],
                         [
                             "type" => "text",
-                            "text" => "โปรตีน ".($nutrition['protein'] ?? 0)."g",
+                            "text" => "โปรตีน g",
                             "size" => "xs"
                         ]
                     ]
@@ -4887,12 +4887,12 @@ private function buildFlexMessage(array $data)
                     "contents" => [
                         [
                             "type" => "text",
-                            "text" => "ไขมัน ".($nutrition['fat'] ?? 0)."g",
+                            "text" => "ไขมัน g",
                             "size" => "xs"
                         ],
                         [
                             "type" => "text",
-                            "text" => "ใยอาหาร ".($nutrition['fiber'] ?? 0)."g",
+                            "text" => "ใยอาหาร g",
                             "size" => "xs"
                         ]
                     ]
@@ -4912,7 +4912,7 @@ private function buildFlexMessage(array $data)
 
                 [
                     "type" => "text",
-                    "text" => $analysis['message'] ?? '-',
+                    "text" => "11",
                     "wrap" => true,
                     "size" => "xs"
                 ],
@@ -4931,7 +4931,7 @@ private function buildFlexMessage(array $data)
 
                 [
                     "type" => "text",
-                    "text" => trim($recommendations),
+                    "text" => "11",
                     "wrap" => true,
                     "size" => "xs"
                 ]

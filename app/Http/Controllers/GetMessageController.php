@@ -4645,6 +4645,8 @@ private function analyzeImageWithGemini($imageBinary)
 
     if ($response->successful()) {
     $data = $response->json();
+     \Log::error($response->status());
+    \Log::error($response->body());
 
     // ตรวจสอบว่ามีโครงสร้างที่ต้องการจริงไหมก่อนดึงค่า
     if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
@@ -4657,12 +4659,7 @@ private function analyzeImageWithGemini($imageBinary)
         }
 
         //return $this->formatLineResponse($resultJson);
-        //return $this->buildFlexMessage($resultJson);
-        $flex = $this->buildFlexMessage($resultJson); // array
-        $flexMessage = new FlexMessageBuilder(
-            'ผลวิเคราะห์อาหาร',
-            $flex
-        );
+        return $this->buildFlexMessage($resultJson);
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());

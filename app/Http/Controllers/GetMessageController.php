@@ -173,7 +173,13 @@ class GetMessageController extends Controller {
                     // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                     // $bot->pushMessage($userId, $textMessageBuilder);
                     $flex = $this->analyzeImageWithGemini($imageBinary);
-                    \Log::info(json_encode($flex, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+                   $response = $bot->replyMessage(
+                        $replyToken,
+                        $flexMessageBuilder
+                    );
+
+                    \Log::info('LINE STATUS: '.$response->getHTTPStatus());
+                    \Log::info('LINE BODY: '.$response->getRawBody());
 
                       Http::withHeaders([
                           'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),

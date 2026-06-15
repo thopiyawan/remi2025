@@ -173,6 +173,10 @@ class GetMessageController extends Controller {
                     // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                     // $bot->pushMessage($userId, $textMessageBuilder);
                     $flex = $this->analyzeImageWithGemini($imageBinary);
+                    $flexMessageBuilder = new FlexMessageBuilder(
+                        'ผลวิเคราะห์อาหาร',
+                        $flex
+                    );
                    $response = $bot->replyMessage(
                         $replyToken,
                         $flexMessageBuilder

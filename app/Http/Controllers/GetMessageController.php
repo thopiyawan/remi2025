@@ -173,23 +173,21 @@ class GetMessageController extends Controller {
                     // // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
                     // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                     // $bot->pushMessage($userId, $textMessageBuilder);
-                  //   $flex = $this->analyzeImageWithGemini($imageBinary);
-                  //   $flexMessageBuilder = new FlexMessageBuilder(
-                  //       'ผลวิเคราะห์อาหาร',
-                  //       $flex
-                  //   );
-                  //  $response = $bot->replyMessage(
-                  //       $replyToken,
-                  //       $flexMessageBuilder
-                  //   );
+                    $flex = $this->analyzeImageWithGemini($imageBinary,$replyToken);
+                    $flexMessageBuilder = new FlexMessageBuilder(
+                        'ผลวิเคราะห์อาหาร',
+                        $flex
+                    );
+                   $response = $bot->replyMessage(
+                        $replyToken,
+                        $flexMessageBuilder
+                    );
 
-                  //   \Log::info('LINE STATUS: '.$response->getHTTPStatus());
-                  //   \Log::info('LINE BODY: '.$response->getRawBody());
-                  $resultJson = json_decode($resultText, true);
-                  $flex = $this->buildFlexMessage($resultJson);
+                    \Log::info('LINE STATUS: '.$response->getHTTPStatus());
+                    \Log::info('LINE BODY: '.$response->getRawBody());
 
-                      $response = Http::withHeaders([
-                          'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
+                      Http::withHeaders([
+                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
                           'Content-Type' => 'application/json'
                       ])->post(
                           'https://api.line.me/v2/bot/message/reply',
@@ -204,9 +202,6 @@ class GetMessageController extends Controller {
                               ]
                           ]
                       );
-
-                      \Log::info($response->status());
-                      \Log::info($response->body());
                 }
                 continue;
             }
@@ -4545,7 +4540,7 @@ private function detectIntent(string $text, string $sessionId)
     return $response->json();
 }
 
-private function analyzeImageWithGemini($imageBinary)
+private function analyzeImageWithGemini($imageBinary, $replyToken)
 {
     try {
         $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
@@ -4662,6 +4657,28 @@ private function analyzeImageWithGemini($imageBinary)
             \Log::error("Gemini JSON Parse Error: " . $resultText);
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
+
+        $flex = $this->buildFlexMessage($resultJson);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
+            'Content-Type' => 'application/json'
+        ])->post(
+            'https://api.line.me/v2/bot/message/reply',
+            [
+                'replyToken' => $replyToken,
+                'messages' => [
+                    [
+                        'type' => 'flex',
+                        'altText' => 'ผลวิเคราะห์อาหาร',
+                        'contents' => $flex
+                    ]
+                ]
+            ]
+        );
+
+        \Log::info($response->status());
+        \Log::info($response->body());
 
         //return $this->formatLineResponse($resultJson);
         return $this->buildFlexMessage($resultJson);

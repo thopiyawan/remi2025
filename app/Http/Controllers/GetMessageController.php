@@ -71,7 +71,6 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
-use LINE\LINEBot\MessageBuilder\FlexMessageBuilder;
 use LINE\LINEBot\Event\Parser\EventRequestParser;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 use Gemini\Data\Blob;
@@ -168,40 +167,11 @@ class GetMessageController extends Controller {
                     // AnalyzeImageJob::dispatch($userId, $imageBinary);
                     
                     // แบบ Synchronous (สำหรับการทดสอบ)
-                    // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                    $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
-                    // // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
-                    // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                    // $bot->pushMessage($userId, $textMessageBuilder);
-                    $flex = $this->analyzeImageWithGemini($imageBinary,$replyToken);
-                    $flexMessageBuilder = new FlexMessageBuilder(
-                        'ผลวิเคราะห์อาหาร',
-                        $flex
-                    );
-                   $response = $bot->replyMessage(
-                        $replyToken,
-                        $flexMessageBuilder
-                    );
-
-                    \Log::info('LINE STATUS: '.$response->getHTTPStatus());
-                    \Log::info('LINE BODY: '.$response->getRawBody());
-
-                      Http::withHeaders([
-                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
-                          'Content-Type' => 'application/json'
-                      ])->post(
-                          'https://api.line.me/v2/bot/message/reply',
-                          [
-                              'replyToken' => $replyToken,
-                              'messages' => [
-                                  [
-                                      'type' => 'flex',
-                                      'altText' => 'ผลวิเคราะห์อาหาร',
-                                      'contents' => $flex
-                                  ]
-                              ]
-                          ]
-                      );
+                    // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
+                    $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                    $bot->pushMessage($userId, $textMessageBuilder);
                 }
                 continue;
             }
@@ -4540,7 +4510,7 @@ private function detectIntent(string $text, string $sessionId)
     return $response->json();
 }
 
-private function analyzeImageWithGemini($imageBinary, $replyToken)
+private function analyzeImageWithGemini($imageBinary)
 {
     try {
         $projectId = config('services.google_cloud.project_id'); // ตั้งค่าใน config/services.php
@@ -4645,8 +4615,6 @@ private function analyzeImageWithGemini($imageBinary, $replyToken)
 
     if ($response->successful()) {
     $data = $response->json();
-     \Log::error($response->status());
-    \Log::error($response->body());
 
     // ตรวจสอบว่ามีโครงสร้างที่ต้องการจริงไหมก่อนดึงค่า
     if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
@@ -4658,30 +4626,7 @@ private function analyzeImageWithGemini($imageBinary, $replyToken)
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
 
-        $flex = $this->buildFlexMessage($resultJson);
-
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
-            'Content-Type' => 'application/json'
-        ])->post(
-            'https://api.line.me/v2/bot/message/reply',
-            [
-                'replyToken' => $replyToken,
-                'messages' => [
-                    [
-                        'type' => 'flex',
-                        'altText' => 'ผลวิเคราะห์อาหาร',
-                        'contents' => $flex
-                    ]
-                ]
-            ]
-        );
-
-        \Log::info($response->status());
-        \Log::info($response->body());
-
-        //return $this->formatLineResponse($resultJson);
-        return $this->buildFlexMessage($resultJson);
+        return $this->formatLineResponse($resultJson);
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
@@ -4802,179 +4747,6 @@ public function chatWithGemini($userMessage)
     }
     
     return "ระบบขัดข้องชั่วคราวค่ะ";
-}
-
-private function buildFlexMessage(array $data)
-{
-    $nutrition = $data['nutrition'] ?? [];
-    $analysis = $data['analysis'] ?? [];
-
-    $foodName = $data['full_foodname']
-        ?? ($data['foods'][0]['name'] ?? 'ไม่ทราบชื่ออาหาร');
-
-    $recommendations = '';
-
-    foreach (($data['recommendations'] ?? []) as $item) {
-        $recommendations .= "• {$item}\n";
-    }
-    
-
-    return [
-        "type" => "bubble",
-        "size" => "giga",
-
-        "header" => [
-            "type" => "box",
-            "layout" => "vertical",
-            "backgroundColor" => "#E67E22",
-            "contents" => [
-                [
-                    "type" => "text",
-                    "text" => "🍽️ ".$foodName,
-                    "weight" => "bold",
-                    "size" => "xl",
-                    "color" => "#FFFFFF",
-                    "wrap" => true
-                ]
-            ]
-        ],
-
-        "body" => [
-            "type" => "box",
-            "layout" => "vertical",
-            "spacing" => "md",
-            "contents" => [
-
-                [
-                    "type" => "box",
-                    "layout" => "vertical",
-                    "contents" => [
-
-                        [
-                            "type" => "box",
-                            "layout" => "horizontal",
-                            "contents" => [
-                                [
-                                    "type" => "text",
-                                    "text" => "⚖️ น้ำหนักอาหาร",
-                                    "size" => "sm"
-                                ],
-                                [
-                                    "type" => "text",
-                                    "text" => ($nutrition['portion_estimation'] ?? 0)." g",
-                                    "size" => "sm",
-                                    "align" => "end",
-                                    "weight" => "bold"
-                                ]
-                            ]
-                        ],
-
-                        [
-                            "type" => "box",
-                            "layout" => "horizontal",
-                            "contents" => [
-                                [
-                                    "type" => "text",
-                                    "text" => "🔥 พลังงานรวม",
-                                    "size" => "sm"
-                                ],
-                                [
-                                    "type" => "text",
-                                    "text" => ($nutrition['calories'] ?? 0)." kcal",
-                                    "size" => "sm",
-                                    "align" => "end",
-                                    "weight" => "bold"
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-
-                [
-                    "type" => "separator"
-                ],
-
-                [
-                    "type" => "text",
-                    "text" => "📊 สรุปค่าโภชนาการ",
-                    "weight" => "bold",
-                    "size" => "sm"
-                ],
-
-                [
-                    "type" => "box",
-                    "layout" => "horizontal",
-                    "contents" => [
-                        [
-                            "type" => "text",
-                            "text" => "คาร์บ ".($nutrition['carb'] ?? 0)."g",
-                            "size" => "xs"
-                        ],
-                        [
-                            "type" => "text",
-                            "text" => "โปรตีน ".($nutrition['protein'] ?? 0)."g",
-                            "size" => "xs"
-                        ]
-                    ]
-                ],
-
-                [
-                    "type" => "box",
-                    "layout" => "horizontal",
-                    "contents" => [
-                        [
-                            "type" => "text",
-                            "text" => "ไขมัน ".($nutrition['fat'] ?? 0)."g",
-                            "size" => "xs"
-                        ],
-                        [
-                            "type" => "text",
-                            "text" => "ใยอาหาร ".($nutrition['fiber'] ?? 0)."g",
-                            "size" => "xs"
-                        ]
-                    ]
-                ],
-
-                [
-                    "type" => "separator"
-                ],
-
-                [
-                    "type" => "text",
-                    "text" => "⚠️ ผลวิเคราะห์โภชนาการ GDM",
-                    "weight" => "bold",
-                    "size" => "sm",
-                    "color" => "#C0392B"
-                ],
-
-                [
-                    "type" => "text",
-                    "text" => $analysis['message'] ?? '-',
-                    "wrap" => true,
-                    "size" => "xs"
-                ],
-
-                [
-                    "type" => "separator"
-                ],
-
-                [
-                    "type" => "text",
-                    "text" => "💡 แนะนำสำหรับคุณแม่",
-                    "weight" => "bold",
-                    "size" => "sm",
-                    "color" => "#117A65"
-                ],
-
-                [
-                    "type" => "text",
-                    "text" => trim($recommendations),
-                    "wrap" => true,
-                    "size" => "xs"
-                ]
-            ]
-        ]
-    ];
 }
 
    

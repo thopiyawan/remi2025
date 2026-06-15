@@ -173,21 +173,23 @@ class GetMessageController extends Controller {
                     // // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
                     // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                     // $bot->pushMessage($userId, $textMessageBuilder);
-                    $flex = $this->analyzeImageWithGemini($imageBinary);
-                    $flexMessageBuilder = new FlexMessageBuilder(
-                        'ผลวิเคราะห์อาหาร',
-                        $flex
-                    );
-                   $response = $bot->replyMessage(
-                        $replyToken,
-                        $flexMessageBuilder
-                    );
+                  //   $flex = $this->analyzeImageWithGemini($imageBinary);
+                  //   $flexMessageBuilder = new FlexMessageBuilder(
+                  //       'ผลวิเคราะห์อาหาร',
+                  //       $flex
+                  //   );
+                  //  $response = $bot->replyMessage(
+                  //       $replyToken,
+                  //       $flexMessageBuilder
+                  //   );
 
-                    \Log::info('LINE STATUS: '.$response->getHTTPStatus());
-                    \Log::info('LINE BODY: '.$response->getRawBody());
+                  //   \Log::info('LINE STATUS: '.$response->getHTTPStatus());
+                  //   \Log::info('LINE BODY: '.$response->getRawBody());
 
-                      Http::withHeaders([
-                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
+                  $flex = $this->buildFlexMessage($resultJson);
+
+                      $response = Http::withHeaders([
+                          'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
                           'Content-Type' => 'application/json'
                       ])->post(
                           'https://api.line.me/v2/bot/message/reply',
@@ -202,6 +204,9 @@ class GetMessageController extends Controller {
                               ]
                           ]
                       );
+
+                      \Log::info($response->status());
+                      \Log::info($response->body());
                 }
                 continue;
             }

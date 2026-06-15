@@ -173,6 +173,7 @@ class GetMessageController extends Controller {
                     // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
                     // $bot->pushMessage($userId, $textMessageBuilder);
                     $flex = $this->analyzeImageWithGemini($imageBinary);
+                    \Log::info(json_encode($flex, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 
                       Http::withHeaders([
                           'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
@@ -4781,6 +4782,7 @@ private function buildFlexMessage(array $data)
     foreach (($data['recommendations'] ?? []) as $item) {
         $recommendations .= "• {$item}\n";
     }
+    
 
     return [
         "type" => "bubble",
@@ -4793,7 +4795,7 @@ private function buildFlexMessage(array $data)
             "contents" => [
                 [
                     "type" => "text",
-                    "text" => "🍽️ ",
+                    "text" => "🍽️ ".$foodName,
                     "weight" => "bold",
                     "size" => "xl",
                     "color" => "#FFFFFF",
@@ -4824,7 +4826,7 @@ private function buildFlexMessage(array $data)
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => " g",
+                                    "text" => ($nutrition['portion_estimation'] ?? 0)." g",
                                     "size" => "sm",
                                     "align" => "end",
                                     "weight" => "bold"
@@ -4843,7 +4845,7 @@ private function buildFlexMessage(array $data)
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => " kcal",
+                                    "text" => ($nutrition['calories'] ?? 0)." kcal",
                                     "size" => "sm",
                                     "align" => "end",
                                     "weight" => "bold"
@@ -4870,12 +4872,12 @@ private function buildFlexMessage(array $data)
                     "contents" => [
                         [
                             "type" => "text",
-                            "text" => "คาร์บ ",
+                            "text" => "คาร์บ ".($nutrition['carb'] ?? 0)."g",
                             "size" => "xs"
                         ],
                         [
                             "type" => "text",
-                            "text" => "โปรตีน g",
+                            "text" => "โปรตีน ".($nutrition['protein'] ?? 0)."g",
                             "size" => "xs"
                         ]
                     ]
@@ -4887,12 +4889,12 @@ private function buildFlexMessage(array $data)
                     "contents" => [
                         [
                             "type" => "text",
-                            "text" => "ไขมัน g",
+                            "text" => "ไขมัน ".($nutrition['fat'] ?? 0)."g",
                             "size" => "xs"
                         ],
                         [
                             "type" => "text",
-                            "text" => "ใยอาหาร g",
+                            "text" => "ใยอาหาร ".($nutrition['fiber'] ?? 0)."g",
                             "size" => "xs"
                         ]
                     ]
@@ -4912,7 +4914,7 @@ private function buildFlexMessage(array $data)
 
                 [
                     "type" => "text",
-                    "text" => "11",
+                    "text" => $analysis['message'] ?? '-',
                     "wrap" => true,
                     "size" => "xs"
                 ],
@@ -4931,7 +4933,7 @@ private function buildFlexMessage(array $data)
 
                 [
                     "type" => "text",
-                    "text" => "11",
+                    "text" => trim($recommendations),
                     "wrap" => true,
                     "size" => "xs"
                 ]

@@ -4626,7 +4626,9 @@ private function analyzeImageWithGemini($imageBinary)
             return "ขออภัย ระบบประมวลผลข้อมูลผิดพลาด";
         }
 
-        return $this->formatLineResponse($resultJson);
+        //return $this->formatLineResponse($resultJson);
+        return $this->buildFlexMessage($resultJson);
+        
     }
 }
         throw new \Exception('Vertex AI Response Error: ' . $response->body());
@@ -4645,11 +4647,10 @@ private function formatLineResponse($data)
     $recommendations = $data['recommendations'] ?? [];
 
     $msg = "";
-
+    $msg .= ($data['full_foodname'] ?? '-') . "\n";
     foreach ($foods as $food) {
 
         $msg .= "🍽️ " . ($food['name'] ?? '-') . "\n";
-        $msg .= "🍽️ " . ($data['full_foodname'] ?? '-') . "\n";
 
         if (!empty($food['ingredients'])) {
 
@@ -4750,5 +4751,151 @@ public function chatWithGemini($userMessage)
     return "ระบบขัดข้องชั่วคราวค่ะ";
 }
 
+
+private function buildFlexMessage($data)
+{
+    $nutrition = $data['nutrition'] ?? [];
+    $analysis = $data['analysis'] ?? [];
+
+    $mealName = $data['full_foodname'] ?? 'ไม่ทราบชื่ออาหาร';
+
+    $calories = $nutrition['calories'] ?? 0;
+    $carb = $nutrition['carb'] ?? 0;
+    $protein = $nutrition['protein'] ?? 0;
+    $fat = $nutrition['fat'] ?? 0;
+    $fiber = $nutrition['fiber'] ?? 0;
+    $weight = $nutrition['portion_estimation'] ?? 0;
+
+    $analysisText = $analysis['message'] ?? '';
+
+    $recommendText = '';
+
+    foreach (($data['recommendations'] ?? []) as $item) {
+        $recommendText .= "• {$item}\n";
+    }
+
+    return [
+        'type' => 'bubble',
+        'size' => 'giga',
+
+        'header' => [
+            'type' => 'box',
+            'layout' => 'vertical',
+            'backgroundColor' => '#E67E22',
+            'contents' => [
+                [
+                    'type' => 'text',
+                    'text' => "🍽️ {$mealName}",
+                    'weight' => 'bold',
+                    'size' => 'lg',
+                    'color' => '#FFFFFF',
+                    'wrap' => true
+                ]
+            ]
+        ],
+
+        'body' => [
+            'type' => 'box',
+            'layout' => 'vertical',
+            'contents' => [
+
+                [
+                    'type' => 'box',
+                    'layout' => 'horizontal',
+                    'contents' => [
+                        [
+                            'type' => 'text',
+                            'text' => '⚖️ น้ำหนักอาหาร',
+                            'size' => 'sm'
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => "{$weight} g",
+                            'size' => 'sm',
+                            'align' => 'end',
+                            'weight' => 'bold'
+                        ]
+                    ]
+                ],
+
+                [
+                    'type' => 'box',
+                    'layout' => 'horizontal',
+                    'contents' => [
+                        [
+                            'type' => 'text',
+                            'text' => '🔥 พลังงาน',
+                            'size' => 'sm'
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => "{$calories} kcal",
+                            'size' => 'sm',
+                            'align' => 'end',
+                            'weight' => 'bold'
+                        ]
+                    ]
+                ],
+
+                [
+                    'type' => 'separator',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => '📊 สรุปค่าโภชนาการ',
+                    'weight' => 'bold',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => "คาร์บ {$carb}g | โปรตีน {$protein}g | ไขมัน {$fat}g | ใยอาหาร {$fiber}g",
+                    'wrap' => true,
+                    'size' => 'sm'
+                ],
+
+                [
+                    'type' => 'separator',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => '⚠️ ผลวิเคราะห์ GDM',
+                    'weight' => 'bold',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => $analysisText,
+                    'wrap' => true,
+                    'size' => 'xs'
+                ],
+
+                [
+                    'type' => 'separator',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => '💡 คำแนะนำ',
+                    'weight' => 'bold',
+                    'margin' => 'md'
+                ],
+
+                [
+                    'type' => 'text',
+                    'text' => trim($recommendText),
+                    'wrap' => true,
+                    'size' => 'xs'
+                ]
+            ]
+        ]
+    ];
+}
    
 }

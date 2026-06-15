@@ -155,47 +155,76 @@ class GetMessageController extends Controller {
                 $userId     = $eventObj->getUserId();
 
                 // 1. ตอบกลับทันทีว่าได้รับแล้ว (ป้องกันความสับสน)
-                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("ได้รับรูปภาพแล้วค่ะ กำลังคำนวณสารอาหารให้สักครู่... 🥗"));
+             //   $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("ได้รับรูปภาพแล้วค่ะ กำลังคำนวณสารอาหารให้สักครู่... 🥗"));
 
                 // 2. ดึงรูปภาพ
-                $response = $bot->getMessageContent($messageId);
+                // $response = $bot->getMessageContent($messageId);
                 
-                if ($response->isSucceeded()) {
-                    $imageBinary = $response->getRawBody();
+                // if ($response->isSucceeded()) {
+                //     $imageBinary = $response->getRawBody();
                     
-                    // แนะนำ: ใช้ Dispatch Job ในระดับโปรเจกต์จริง
-                    // AnalyzeImageJob::dispatch($userId, $imageBinary);
+                //     // แนะนำ: ใช้ Dispatch Job ในระดับโปรเจกต์จริง
+                //     // AnalyzeImageJob::dispatch($userId, $imageBinary);
                     
-                    // แบบ Synchronous (สำหรับการทดสอบ)
-                   // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
+                //     // แบบ Synchronous (สำหรับการทดสอบ)
+                //    // $analysisResult = $this->analyzeImageWithGemini($imageBinary);
 
-                    // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
-                    //$textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
-                    //$bot->pushMessage($userId, $textMessageBuilder);
+                //     // 3. ส่งคำตอบกลับแบบ Push Message (เพราะ ReplyToken ใช้ไปแล้วในข้อ 1)
+                //     //$textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($analysisResult);
+                //     //$bot->pushMessage($userId, $textMessageBuilder);
 
 
-                    $flex = $this->analyzeImageWithGemini($imageBinary);
+                //     $flex = $this->analyzeImageWithGemini($imageBinary);
 
-                    Http::withHeaders([
-                        'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
-                        'Content-Type' => 'application/json'
-                    ])->post(
-                        'https://api.line.me/v2/bot/message/reply',
-                        [
-                            'replyToken' => $replyToken,
-                            'messages' => [
-                                [
-                                    'type' => 'flex',
-                                    'altText' => 'ผลวิเคราะห์อาหาร',
-                                    'contents' => $flex
-                                ]
-                            ]
-                        ]
-                    );
-                }
+                //     Http::withHeaders([
+                //         'Authorization' => 'Bearer ' . env('LINE_CHANNEL_ACCESS_TOKEN'),
+                //         'Content-Type' => 'application/json'
+                //     ])->post(
+                //         'https://api.line.me/v2/bot/message/reply',
+                //         [
+                //             'replyToken' => $replyToken,
+                //             'messages' => [
+                //                 [
+                //                     'type' => 'flex',
+                //                     'altText' => 'ผลวิเคราะห์อาหาร',
+                //                     'contents' => $flex
+                //                 ]
+                //             ]
+                //         ]
+                //     );
+                // }
 
-                \Log::info($response->getHTTPStatus());
-                \Log::info($response->getRawBody());
+                // \Log::info($response->getHTTPStatus());
+                // \Log::info($response->getRawBody());
+
+                $response = $bot->getMessageContent($messageId);
+
+                  if ($response->isSucceeded()) {
+
+                      $imageBinary = $response->getRawBody();
+
+                      $flex = $this->analyzeImageWithGemini($imageBinary);
+
+                      Http::withHeaders([
+                          'Authorization' => 'Bearer '.env('LINE_CHANNEL_ACCESS_TOKEN'),
+                          'Content-Type' => 'application/json'
+                      ])->post(
+                          'https://api.line.me/v2/bot/message/reply',
+                          [
+                              'replyToken' => $replyToken,
+                              'messages' => [
+                                  [
+                                      'type' => 'flex',
+                                      'altText' => 'ผลวิเคราะห์อาหาร',
+                                      'contents' => $flex
+                                  ]
+                              ]
+                          ]
+                      );
+                  }
+
+                \Log::info('TYPE='.gettype($flex));
+                \Log::info(json_encode($flex, JSON_UNESCAPED_UNICODE));
                 continue;
             }
               // ➕ กรณีปลดบล็อค / add friend

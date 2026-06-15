@@ -210,7 +210,7 @@ class GetMessageController extends Controller {
                           'https://api.line.me/v2/bot/chat/loading/start',
                           [
                               'chatId' => $userId,
-                              'loadingSeconds' => 15
+                              'loadingSeconds' => 20
                           ]
                       );
 

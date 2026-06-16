@@ -4860,7 +4860,7 @@ private function buildFlexMessage($data)
                 ],
                 [
                     'type' => 'text',
-                    'text' => ",มื้อนี้ : {$meal_risk_level}",
+                    'text' => "มื้อนี้ : {$meal_risk_level}",
                     'weight' => 'bold',
                     'size' => 'md',
                     'color' => '#FFFFFF',
@@ -4967,6 +4967,39 @@ private function buildFlexMessage($data)
                     'text' => trim($recommendText),
                     'wrap' => true,
                     'size' => 'xs'
+                ]
+            ]
+        ],
+        'footer' => [
+            'type' => 'box',
+            'layout' => 'vertical',
+            'spacing' => 'sm',
+            'contents' => [
+                [
+                    'type' => 'button',
+                    'style' => 'primary',
+                    'action' => [
+                        'type' => 'postback',
+                        'label' => '💾 บันทึกมื้อนี้',
+                        'data' => 'action=save_meal'
+                    ]
+                ],
+                [
+                    'type' => 'button',
+                    'style' => 'secondary',
+                    'action' => [
+                        'type' => 'message',
+                        'label' => '📷 วิเคราะห์รูปใหม่',
+                        'text' => 'วิเคราะห์อาหาร'
+                    ]
+                ],
+                [
+                    'type' => 'button',
+                    'action' => [
+                        'type' => 'message',
+                        'label' => '🥗 แนะนำเมนู',
+                        'text' => 'แนะนำเมนูสำหรับหญิงตั้งครรภ์'
+                    ]
                 ]
             ]
         ]

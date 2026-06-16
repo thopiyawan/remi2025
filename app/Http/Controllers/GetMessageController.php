@@ -4972,7 +4972,7 @@ private function buildFlexMessage($data)
         ],
         'footer' => [
             'type' => 'box',
-            'layout' => 'vertical',
+            'layout' => 'horizontal',
             'spacing' => 'sm',
             'contents' => [
                 [
@@ -4993,14 +4993,14 @@ private function buildFlexMessage($data)
                         'text' => 'วิเคราะห์อาหาร'
                     ]
                 ],
-                [
-                    'type' => 'button',
-                    'action' => [
-                        'type' => 'message',
-                        'label' => '🥗 แนะนำเมนู',
-                        'text' => 'แนะนำเมนูสำหรับหญิงตั้งครรภ์'
-                    ]
-                ]
+                // [
+                //     'type' => 'button',
+                //     'action' => [
+                //         'type' => 'message',
+                //         'label' => '🥗 แนะนำเมนู',
+                //         'text' => 'แนะนำเมนูสำหรับหญิงตั้งครรภ์'
+                //     ]
+                // ]
             ]
         ]
     ];

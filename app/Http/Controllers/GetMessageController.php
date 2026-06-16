@@ -4637,6 +4637,7 @@ private function analyzeImageWithGemini($imageBinary)
                   {
                     "meal_type": "",
                     "full_foodname": "",
+                    "meal_risk_level":"ควรระวัง|พอใช้|ดี|ดีเยี่ยม",
                     "foods": [
                       {
                         "name": "",
@@ -4823,6 +4824,7 @@ private function buildFlexMessage($data)
     $analysis = $data['analysis'] ?? [];
 
     $mealName = $data['full_foodname'] ?? 'ไม่ทราบชื่ออาหาร';
+    $meal_risk_level = $data['meal_risk_level'] ?? '-';
 
     $calories = $nutrition['calories'] ?? 0;
     $carb = $nutrition['carb'] ?? 0;
@@ -4853,6 +4855,14 @@ private function buildFlexMessage($data)
                     'text' => "🍽️ {$mealName}",
                     'weight' => 'bold',
                     'size' => 'lg',
+                    'color' => '#FFFFFF',
+                    'wrap' => true
+                ],
+                [
+                    'type' => 'text',
+                    'text' => ",มื้อนี้ : {$meal_risk_level}",
+                    'weight' => 'bold',
+                    'size' => 'md',
                     'color' => '#FFFFFF',
                     'wrap' => true
                 ]
